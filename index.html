@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slot Machine</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div id="header">
+        <img id="logo-small" src="./assets/logo-small.svg" alt="Logo">
+        <img id="logo" src="./assets/Logo.svg" alt="Logo">
+        <div id="powerspins-popup">
+            <h2>7 POWERSPINS</h2>
+            <p id="powerspin-win">23670</p>
+            <div id="popup-description">
+                <div id="popup-description-img">
+                    <img src="./assets/medusa.jpg" alt="Medusa">
+                    <img src="./assets/achilles.jpg" alt="Achilles">
+                    <img src="./assets/aristoteles.jpg" alt="Aristoteles">
+                    <img src="./assets/alexander.jpg" alt="Alexander">
+                    <img src="./assets/zeus.jpg" alt="Zeus">
+                </div>
+                <div>remain</div>
+            </div>
+        </div>
+    </div>
+    <div id="slot-machine">
+        <div class="reel" id="reel1"></div>
+        <div class="reel" id="reel2"></div>
+        <div class="reel" id="reel3"></div>
+        <div class="reel" id="reel4"></div>
+        <div class="reel" id="reel5"></div>
+    </div>
+    <div id="buttons">
+        <button id="guide">GUIDE</button>
+        <div id="bank-font">BANK</div>
+        <div id="bank">1000</div>
+        <div id="win-font">WIN</div>
+        <div id="win">0</div>
+        <div id="bet-font">BET</div>
+        <div id="bet">
+            <select name="bet" id="select-bet">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="40">40</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="150">150</option>
+                <option value="200">200</option>
+                <option value="400">400</option>
+            </select>
+        </div>
+        <button id="spin-button">START</button>
+    </div>
+</body>
+</html>
