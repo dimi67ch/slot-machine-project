@@ -3,7 +3,7 @@ document.getElementById('spin-button').addEventListener('click', spinReels);
 const symbols = [
     { name: 'Eye', src: '../assets/eye.svg', probability: 0.05 },
     { name: 'J', src: '../assets/J.svg', probability: 0.17 },
-    { name: 'Q', src: '../assets/Q.svg', probability: 0.15},
+    { name: 'Q', src: '../assets/Q.svg', probability: 0.15 },
     { name: 'K', src: '../assets/K.svg', probability: 0.13 },
     { name: 'A', src: '../assets/A.svg', probability: 0.12 },
     { name: 'Medusa', src: '../assets/medusa.jpg', probability: 0.10 },
@@ -47,6 +47,48 @@ function createReelSymbols(reel) {
     }
 }
 
+function createEyeOverlay(imgElement) {
+    let container = getClosestAncestor(imgElement, '.reel');
+
+    let reelIndex = Array.from(container.parentElement.children).indexOf(container);
+
+    if (reelIndex >= 1 && reelIndex <= 4) {
+        let rowIndex = Array.from(container.children).indexOf(imgElement.parentElement);
+        if (rowIndex >= 0 && rowIndex <= 2) {
+            let grandParent = getClosestAncestor(imgElement, '.reel').parentElement;
+
+            let grandParentTop = parseFloat(window.getComputedStyle(grandParent).top);
+            
+            if ( ((window.matchMedia("(max-width: 930px)").matches)
+                && (isNaN(grandParentTop) || grandParentTop <= 0 || grandParentTop >= 30))
+                || ((isNaN(grandParentTop) || grandParentTop <= 0 || grandParentTop >= 20)) ) {
+
+                let overlay = document.createElement('img');
+                overlay.className = 'eye-overlay';
+                overlay.src = '../assets/eye.svg';
+
+                let rect = imgElement.getBoundingClientRect();
+                overlay.style.position = 'absolute';
+                overlay.style.top = `${rect.top + window.scrollY}px`;
+                overlay.style.left = `${rect.left + window.scrollX}px`;
+                overlay.style.width = `${rect.width}px`;
+                overlay.style.height = `${rect.height}px`;
+
+                document.body.appendChild(overlay);
+            }
+        }
+    }
+}
+
+function getClosestAncestor(element, selector) {
+    return element.closest(selector);
+}
+
+function removeAllEyeOverlays() {
+    const overlays = document.querySelectorAll('.eye-overlay');
+    overlays.forEach(overlay => overlay.remove());
+}
+
 function spinReels() {
     if (isSpinning) return;
     isSpinning = true;
@@ -55,25 +97,59 @@ function spinReels() {
     eyePositions = [];
     shiftedEyePositions = [];
 
+    // Define and use the reels variable here
     let reels = document.getElementsByClassName('reel');
     let completedReels = 0;
-    for (let i = 0; i < reels.length; i++) {
-        let reel = reels[i];
-        setTimeout(() => {
-            animateReel(reel, i, () => {
-                completedReels++;
-                if (completedReels === reels.length) {
-                    isSpinning = false;
-                    document.getElementById('spin-button').disabled = false;
+    
+    // Convert HTMLCollection to Array for easier manipulation
+    reels = Array.from(reels);
 
-                    symbolSettings = {}; // Reset symbolSettings for each spin
-                    logEyePositions();
-                    shiftEyePositions();
-                    updateSymbolSettings();
-                }
-            });
-        }, i * 250);
-    }
+    // Find all Eye symbols and create overlay images
+    let eyeSymbols = document.querySelectorAll('[data-name="Eye"]');
+    eyeSymbols.forEach(symbol => createEyeOverlay(symbol));
+
+    // Force a reflow to ensure initial styles are applied
+    setTimeout(() => {
+        // Move the overlays
+        moveEyeOverlays();
+
+        reels.forEach((reel, i) => {
+            setTimeout(() => {
+                animateReel(reel, i, () => {
+                    completedReels++;
+                    if (completedReels === reels.length) {
+                        isSpinning = false;
+                        document.getElementById('spin-button').disabled = false;
+
+                        symbolSettings = {}; // Reset symbolSettings for each spin
+                        shiftEyePositions();
+                        updateSymbolSettings();
+
+                        // Remove all overlays after the spin
+                        removeAllEyeOverlays();
+                    }
+                });
+            }, i * 250);
+        });
+    }, 0); // Timeout to ensure initial styles are applied
+}
+
+function moveEyeOverlays() {
+    // Select all eye-overlay elements
+    let overlays = document.querySelectorAll('.eye-overlay');
+
+    // Trigger reflow
+    overlays.forEach(overlay => {
+        // Apply the initial transform to force reflow
+        overlay.style.transform = 'translateX(0)';
+    });
+
+    // Force a reflow
+    overlays.forEach(overlay => {
+        // Trigger the animation
+        overlay.style.transition = 'transform 1s ease';
+        overlay.style.transform = 'translateX(calc(-10vw))';
+    });
 }
 
 function animateReel(reel, reelIndex, callback) {
@@ -83,6 +159,7 @@ function animateReel(reel, reelIndex, callback) {
 
     function animate() {
         position += speed;
+
         for (let i = 0; i < symbols.length; i++) {
             let symbol = symbols[i];
             let newPos = (parseInt(symbol.style.top) + position) % 50;
@@ -126,10 +203,6 @@ function logReelSymbols(reel, reelIndex) {
     }
 }
 
-function logEyePositions() {
-    console.log('Eye positions:', eyePositions);
-}
-
 function shiftEyePositions() {
     shiftedEyePositions = eyePositions
         .filter(pos => pos.reel > 0)
@@ -137,7 +210,6 @@ function shiftEyePositions() {
             return { reel: pos.reel - 1, position: pos.position };
         });
 
-    console.log('Shifted Eye positions:', shiftedEyePositions);
 }
 
 function updateSymbolSettings() {
@@ -148,7 +220,6 @@ function updateSymbolSettings() {
         }
         symbolSettings[pos.reel][pos.position] = symbols.find(symbol => symbol.name === 'Eye');
     });
-    console.log('Updated symbol settings:', symbolSettings);
 }
 
 window.onload = function() {
@@ -167,3 +238,4 @@ function keyPressHandler(event) {
         spinReels();
     }
 }
+

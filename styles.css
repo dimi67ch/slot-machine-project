@@ -105,6 +105,12 @@ body {
     position: absolute;
 }
 
+.eye-overlay {
+    z-index: 999; 
+    transition: transform 1s ease;
+}
+
+
 #select-bet {
     position: absolute;
     height: 100%;
