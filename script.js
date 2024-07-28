@@ -21,6 +21,20 @@ const powerspinSymbols = [
     { name: 'Zeus', src: './assets/zeus.jpg', probability: 0.10 }
 ];
 
+const freegamesSymbols = [
+    //{ name: 'GoldenEye', src: './assets/golden_eye.svg', probability: 0.01 },
+    { name: 'Eye', src: './assets/eye.svg', probability: 0.04 },
+    { name: 'J', src: './assets/J.svg', probability: 0.15 },
+    { name: 'Q', src: './assets/Q.svg', probability: 0.15 },
+    { name: 'K', src: './assets/K.svg', probability: 0.13 },
+    { name: 'A', src: './assets/A.svg', probability: 0.12 },
+    { name: 'Medusa', src: './assets/medusa.jpg', probability: 0.10 },
+    { name: 'Achilles', src: './assets/achilles.jpg', probability: 0.09 },
+    { name: 'Aristoteles', src: './assets/aristoteles.jpg', probability: 0.08 },
+    { name: 'Alexander', src: './assets/alexander.jpg', probability: 0.07 },
+    { name: 'Zeus', src: './assets/zeus.jpg', probability: 0.06 }
+];
+
 const lines = [
     [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]], // Linie 1: obere Reihe
     [[0, 1], [1, 1], [2, 1], [3, 1], [4, 1]], // Linie 2: mittlere Reihe
@@ -34,13 +48,27 @@ const lines = [
 ];
 
 let powerspinsPopup = document.getElementById('powerspins-popup');
+let freegamesPopup = document.getElementById('freegames-popup');
+
 let bankValue = Number(document.getElementById('bank').innerText);
 let selectBetBox = document.getElementById('select-bet');
 let betValue = selectBetBox.value;
+let results = [];
+let isSpinning = false; // Variable zur Verfolgung des Spinnstatus
+
 let powerspins = false;
 let powerspinsTotal = 0;
 let powerspinCount = 0;
 let powerspinWin = 0;
+
+let freegames = false;
+let freegamesTotal = 0;
+let freegamesCount = 0;
+let freegamesWin = 0;
+
+let symbolSettings = {}; // { reelIndex: { positionIndex: symbol } }
+let eyePositions = [];
+let shiftedEyePositions = [];
 
 const symbolPayouts = {
     'J': { 3: 1, 4: 2, 5: 3 },
@@ -54,9 +82,6 @@ const symbolPayouts = {
     'Zeus': { 2: 3, 3: 5, 4: 8, 5: 15 }
 };
 
-let results = [];
-let isSpinning = false; // Variable zur Verfolgung des Spinnstatus
-
 function getRandomSymbol() {
     let rand = Math.random();
     let cumulativeProbability = 0;
@@ -65,7 +90,8 @@ function getRandomSymbol() {
 
     if (powerspins) {
         symbolsToUse = powerspinSymbols;
-
+    } else if (freegames) {
+        symbolsToUse = freegamesSymbols;
     } else {
         symbolsToUse = symbols;
     }
@@ -113,14 +139,32 @@ function spinReels() {
         powerspinsTotal = 0;
     }
 
+    if (freegamesCount == 10) {
+        freegamesPopup.style.opacity = '0';    //hide the element
+        document.getElementById("freegames-win").innerHTML = "";
+        freegamesWin = 0;
+        document.getElementById('freegames')
+        toggleFreegames();
+        freegamesCount = 0;
+        freegamesTotal = 0;
+    }
+
     let symbolsToUse;
     if (powerspins) {
         powerspinsPopup.style.opacity = '0'; // //hide the element
 
         powerspinCount += 1;
         symbolsToUse = powerspinSymbols;
+    } else if (freegames) {
+        freegamesPopup.style.opacity = '0'; // //hide the element
+        freegamesCount += 1;
+        symbolsToUse = freegamesSymbols;
 
-    } else {
+        // Find all Eye symbols and create overlay images
+        let eyeSymbols = document.querySelectorAll('[data-name="Eye"]');
+        eyeSymbols.forEach(symbol => createEyeOverlay(symbol));
+    }
+    else {
         symbolsToUse = symbols;
     }
 
@@ -128,7 +172,10 @@ function spinReels() {
     isSpinning = true;
     document.getElementById('spin-button').disabled = true;
 
-    if (!powerspins) {
+    eyePositions = [];
+    shiftedEyePositions = [];
+
+    if (!powerspins && !freegames) {
         bankValue -= betValue;
         document.getElementById('bank').innerText = bankValue;
     }
@@ -137,40 +184,59 @@ function spinReels() {
     let reels = document.getElementsByClassName('reel');
     let completedReels = 0; // Zähler für abgeschlossene Walzen
 
+    // Convert HTMLCollection to Array for easier manipulation
+    reels = Array.from(reels);
+
     // Entferne die roten Rahmen von vorherigen Spins
     removeHighlightFromSymbols();
 
-    for (let i = 0; i < reels.length; i++) {
-        let reel = reels[i];
-        setTimeout(() => {
-            animateReel(reel, i, () => {
-                completedReels++;
-                if (completedReels === reels.length) {
-                    isSpinning = false; // Spin abgeschlossen
-                    if (powerspinCount == 7) {
-                        document.getElementById('popup-description').style.display = 'none';
-                        document.getElementById('powerspin-win').style.display = 'block';
-                        if(selectBetBox.disabled){
-                            console.log("disabled")
-                            selectBetBox.disabled = false;
-                            if(!selectBetBox.disabled){
-                                console.log("enabled")
-                            }
+    // Force a reflow to ensure initial styles are applied
+    setTimeout(() => {
+
+        if (freegames) {
+            // Move the overlays
+            moveEyeOverlays();
+        }
+
+        reels.forEach((reel, i) => {
+            setTimeout(() => {
+                animateReel(reel, i, () => {
+                    completedReels++;
+                    if (completedReels === reels.length) {
+                        isSpinning = false; // Spin abgeschlossen
+                        if (powerspinCount == 7) {
+                            document.getElementById('popup-description').style.display = 'none';
+                            document.getElementById('powerspin-win').style.display = 'block';
+                            powerspinsPopup.style.opacity = '1';    //show the element
                         }
-                        powerspinsPopup.style.opacity = '1';    //show the element
+                        if (freegamesCount == 10) {
+                            document.getElementById('popup-description').style.display = 'none';
+                            document.getElementById('freegames-win').style.display = 'block';
+                            freegamesPopup.style.opacity = '1';    //show the element
+                        }
+                        document.getElementById('spin-button').disabled = false; // Entsperre den Button nach allen Spins
+                        if (!powerspins && !freegames) {
+                            checkForPowerspins();
+                        }
+                        if (!freegames) {
+                            checkForFreegames();
+                        }
+                        checkForWins(); // Überprüfe auf Gewinne
+                        
+                        if (freegames) {
+                            symbolSettings = {}; // Reset symbolSettings for each spin
+                            shiftEyePositions();
+                            updateSymbolSettings();
+    
+                            // Remove all overlays after the spin
+                            removeAllEyeOverlays();
+                            console.log(shiftedEyePositions)
+                        }
                     }
-                    document.getElementById('spin-button').disabled = false; // Entsperre den Button nach allen Spins
-                    if (!powerspins) {
-                        checkForPowerspins();
-                    }
-                    checkForWins(); // Überprüfe auf Gewinne
-                }
-            });
-        }, i * 250); // Verzögerung von 250ms zwischen den Walzen
-    }
-    //console.log("Powerspins left "+powerspinsTotal)
-    //console.log("Powerspin Nr: "+ powerspinCount)
-    //console.log(powerspins)
+                });
+            }, i * 250); // Verzögerung von 250ms zwischen den Walzen
+        });
+    }, 100);
 }
 
 function removeHighlightFromSymbols() {
@@ -191,7 +257,8 @@ function animateReel(reel, reelIndex, callback) {
     function animate() {
         position += speed;
         let newPos = 0;
-        for (let symbol of symbols) {
+        for (let i = 0; i < symbols.length; i++) {
+            let symbol = symbols[i];
             if (window.matchMedia("(max-width: 930px)").matches) {
                 let newPos = (parseInt(symbol.style.top) + position) % 75;
                 symbol.style.top = `${newPos - 15}vw`;
@@ -202,7 +269,9 @@ function animateReel(reel, reelIndex, callback) {
 
             // Neue Symbole während des Spinnens generieren
             if (newPos - 100 < 0) {
-                let chosenSymbol = getRandomSymbol();
+                let chosenSymbol = symbolSettings[reelIndex] && symbolSettings[reelIndex][i] && freegames
+                    ? symbolSettings[reelIndex][i]
+                    : getRandomSymbol();
                 symbol.firstChild.src = chosenSymbol.src;
                 symbol.firstChild.dataset.name = chosenSymbol.name; // Name als Datenattribut speichern
             }
@@ -237,10 +306,14 @@ function logReelSymbols(reel, reelIndex) {
         let symbol = symbols[i];
         let symbolName = symbol.firstChild.dataset.name;
         results[reelIndex].push(symbolName);
+
+        if (symbolName === 'Eye') {
+            eyePositions.push({ reel: reelIndex, position: i });
+        }
     }
 }
 
-function checkForPowerspins () {
+function checkForPowerspins() {
 
     let zeuscount = 0;
 
@@ -253,8 +326,6 @@ function checkForPowerspins () {
         }
     }
 
-    //console.log(zeuscount);
-
     if (zeuscount > 2) {
         togglePowerspins();
         powerspinsTotal = 7;
@@ -265,9 +336,34 @@ function checkForPowerspins () {
     }
 }
 
+function checkForFreegames() {
+    let eyeCount = 0;
+
+    for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 3; j++) {
+            let symbolName = results[i][j];
+            if (symbolName == 'Eye') {
+                eyeCount++;
+            }
+        }
+    }
+
+    if (eyeCount > 2) {
+        toggleFreegames();
+        freegamesTotal = 10;
+        selectBetBox.disabled = true;
+        document.getElementById('popup-description').style.display = 'flex';
+        document.getElementById('freegames-win').style.display = 'none';
+        freegamesPopup.style.opacity = '1'; // show the element
+    }
+}
+
 function togglePowerspins() {
     powerspins = !powerspins;
-    //console.log("toogled to: "+powerspins)
+}
+
+function toggleFreegames() {
+    freegames = !freegames;
 }
 
 function checkForWins() {
@@ -368,6 +464,14 @@ function checkForWins() {
         document.getElementById("powerspin-win").innerHTML = powerspinWin;
     }
 
+    if (freegamesCount > 0) {
+        freegamesWin += totalWin;
+        console.log("Freegame "+freegamesCount+", Gewinn: "+totalWin+", Gesamt: "+freegamesWin)
+    }
+    if (freegamesCount == 10) {
+        document.getElementById("freegames-win").innerHTML = freegamesWin;
+    }
+
     // Anzeigen des gesamten Gewinns
     document.getElementById('win').innerText = totalWin; // Den Gewinn anzeigen
     bankValue += totalWin;
@@ -382,6 +486,89 @@ function highlightWinningSymbols(positions) {
         let symbol = reel.getElementsByClassName('symbol')[symbolIndex];
         symbol.firstChild.classList.add('win-symbol'); // Anwenden der Klasse auf das Bild-Element
     }
+}
+
+function createEyeOverlay(imgElement) {
+    let container = getClosestAncestor(imgElement, '.reel');
+
+    let reelIndex = Array.from(container.parentElement.children).indexOf(container);
+
+    if (reelIndex >= 1 && reelIndex <= 4) {
+        let rowIndex = Array.from(container.children).indexOf(imgElement.parentElement);
+        if (rowIndex >= 0 && rowIndex <= 2) {
+            let grandParent = getClosestAncestor(imgElement, '.reel').parentElement;
+
+            let grandParentTop = parseFloat(window.getComputedStyle(grandParent).top);
+            
+            if ( ((window.matchMedia("(max-width: 930px)").matches)
+                && (isNaN(grandParentTop) || grandParentTop <= 0 || grandParentTop >= 30))
+                || ((isNaN(grandParentTop) || grandParentTop <= 0 || grandParentTop >= 20)) ) {
+
+                let overlay = document.createElement('img');
+                overlay.className = 'eye-overlay';
+                overlay.src = '../assets/eye.svg';
+
+                let rect = imgElement.getBoundingClientRect();
+                overlay.style.position = 'absolute';
+                overlay.style.top = `${rect.top + window.scrollY}px`;
+                overlay.style.left = `${rect.left + window.scrollX}px`;
+                overlay.style.width = `${rect.width}px`;
+                overlay.style.height = `${rect.height}px`;
+                
+                imgElement.src = "";
+                document.body.appendChild(overlay);
+            }
+        }
+    }
+}
+
+function getClosestAncestor(element, selector) {
+    return element.closest(selector);
+}
+
+function removeAllEyeOverlays() {
+    const overlays = document.querySelectorAll('.eye-overlay');
+    overlays.forEach(overlay => overlay.remove());
+}
+
+function moveEyeOverlays() {
+    // Select all eye-overlay elements
+    let overlays = document.querySelectorAll('.eye-overlay');
+
+    // Trigger reflow
+    overlays.forEach(overlay => {
+        // Apply the initial transform to force reflow
+        overlay.style.transform = 'translateX(0)';
+    });
+
+    // Force a reflow
+    overlays.forEach(overlay => {
+        // Trigger the animation
+        overlay.style.transition = 'transform 0.5s ease';
+        overlay.style.transform = 'translateX(calc(-10vw))';
+    });
+}
+
+function setSymbolPositions(reelIndex, positions) {
+    symbolSettings[reelIndex] = positions;
+}
+
+function shiftEyePositions() {
+    shiftedEyePositions = eyePositions
+        .filter(pos => pos.reel > 0)
+        .map(pos => {
+            return { reel: pos.reel - 1, position: pos.position };
+        });
+}
+
+function updateSymbolSettings() {
+    // Setze die Eye Symbole basierend auf shiftedEyePositions
+    shiftedEyePositions.forEach(pos => {
+        if (!symbolSettings[pos.reel]) {
+            symbolSettings[pos.reel] = {};
+        }
+        symbolSettings[pos.reel][pos.position] = symbols.find(symbol => symbol.name === 'Eye');
+    });
 }
 
 // Initial setup

@@ -132,7 +132,7 @@ body {
     animation: blink 1s infinite; /* Animation hinzufügen */
 }
 
-#powerspins-popup {
+#powerspins-popup, #freegames-popup {
     opacity: 0; /* Initialzustand: Ausgeblendet */
     position: fixed;
     top: 20%; 
