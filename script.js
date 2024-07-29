@@ -60,11 +60,15 @@ let powerspins = false;
 let powerspinsTotal = 7;
 let powerspinCount = 0;
 let powerspinWin = 0;
+let powerspinsPopupActive = false;
+let introPowerspins = false;
 
 let freegames = false;
 let freegamesTotal = 10;
 let freegamesCount = 0;
 let freegamesWin = 0;
+let freegamesPopupActive = false;
+let introFreegames = false;
 
 let symbolSettings = {}; // { reelIndex: { positionIndex: symbol } }
 let eyePositions = [];
@@ -129,38 +133,59 @@ function createReelSymbols(reel) {
 
 function spinReels() {
 
+    if (introPowerspins) {
+        document.getElementById('popup-description').style.display = 'flex';
+        document.getElementById('powerspin-win').style.display = 'none';
+        togglePowerspinsPopup(true); // show the element
+        introPowerspins = false;
+        changeHead('powerspins');
+        return;
+    }
+    
+    if (introFreegames) {
+        document.getElementById('popup-description').style.display = 'flex';
+        document.getElementById('freegames-win').style.display = 'none';
+        toggleFreegamesPopup(true); // show the element
+        introFreegames = false;
+        changeHead('freegames')
+        return;
+    }
+
     if (powerspinCount == powerspinsTotal) {
-        powerspinsPopup.style.opacity = '0';    //hide the element
+        togglePowerspinsPopup(false);   //hide the element
         document.getElementById("powerspin-win").innerHTML = "";
         powerspinWin = 0;
-        document.getElementById('powerspins')
         togglePowerspins();
         powerspinCount = 0;
+        changeHead('default');
     }
 
     if (freegamesCount == freegamesTotal) {
-        freegamesPopup.style.opacity = '0';    //hide the element
+        toggleFreegamesPopup(false);    //hide the element
         document.getElementById("freegames-win").innerHTML = "";
         freegamesWin = 0;
-        document.getElementById('freegames')
         toggleFreegames();
         freegamesCount = 0;
+        changeHead('default');
     }
 
     let symbolsToUse;
     if (powerspins) {
-        powerspinsPopup.style.opacity = '0'; // //hide the element
-
+        togglePowerspinsPopup(false); // //hide the element
         powerspinCount += 1;
         symbolsToUse = powerspinSymbols;
+        updateHead('powerspins');
     } else if (freegames) {
-        freegamesPopup.style.opacity = '0'; // //hide the element
+        toggleFreegamesPopup(false); // //hide the element
         freegamesCount += 1;
         symbolsToUse = freegamesSymbols;
+        updateHead('freegames');
 
-        // Find all Eye symbols and create overlay images
-        let eyeSymbols = document.querySelectorAll('[data-name="Eye"]');
-        eyeSymbols.forEach(symbol => createEyeOverlay(symbol));
+        if (freegamesCount > 1) {
+            // Find all Eye symbols and create overlay images
+            let eyeSymbols = document.querySelectorAll('[data-name="Eye"]');
+            eyeSymbols.forEach(symbol => createEyeOverlay(symbol));
+        }
     }
     else {
         symbolsToUse = symbols;
@@ -191,7 +216,7 @@ function spinReels() {
     // Force a reflow to ensure initial styles are applied
     setTimeout(() => {
 
-        if (freegames) {
+        if (freegamesCount > 1) {
             // Move the overlays
             moveEyeOverlays();
         }
@@ -205,12 +230,12 @@ function spinReels() {
                         if (powerspinCount == powerspinsTotal) {
                             document.getElementById('popup-description').style.display = 'none';
                             document.getElementById('powerspin-win').style.display = 'block';
-                            powerspinsPopup.style.opacity = '1';    //show the element
+                            togglePowerspinsPopup(true);    //show the element
                         }
                         if (freegamesCount == freegamesTotal) {
                             document.getElementById('popup-description').style.display = 'none';
                             document.getElementById('freegames-win').style.display = 'block';
-                            freegamesPopup.style.opacity = '1';    //show the element
+                            toggleFreegamesPopup(true);    //show the element
                         }
                         document.getElementById('spin-button').disabled = false; // Entsperre den Button nach allen Spins
                         if (!freegames) {
@@ -219,14 +244,13 @@ function spinReels() {
                         checkForFreegames();
                         checkForWins(); // Überprüfe auf Gewinne
                         
-                        if (freegames) {
+                        if (freegamesCount > 1) {
                             symbolSettings = {}; // Reset symbolSettings for each spin
                             shiftEyePositions();
                             updateSymbolSettings();
     
                             // Remove all overlays after the spin
                             removeAllEyeOverlays();
-                            console.log(shiftedEyePositions)
                         }
                     }
                 });
@@ -328,9 +352,7 @@ function checkForPowerspins() {
         } else {
             togglePowerspins();
             selectBetBox.disabled = true;
-            document.getElementById('popup-description').style.display = 'flex';
-            document.getElementById('powerspin-win').style.display = 'none';
-            powerspinsPopup.style.opacity = '1'; // show the element
+            introPowerspins = true;
         }
     }
 }
@@ -354,14 +376,33 @@ function checkForFreegames() {
     } else if (!freegames && eyeCount > 2) {
         toggleFreegames();
         selectBetBox.disabled = true;
-        document.getElementById('popup-description').style.display = 'flex';
-        document.getElementById('freegames-win').style.display = 'none';
-        freegamesPopup.style.opacity = '1'; // show the element
+        introFreegames = true;
     }
 }
 
 function togglePowerspins() {
     powerspins = !powerspins;
+}
+
+function togglePowerspinsPopup (status) {
+    powerspinsPopupActive = status;
+
+    if (powerspinsPopupActive) {
+        powerspinsPopup.style.opacity = '1';    //show the element
+    } else {
+        powerspinsPopup.style.opacity = '0';    //hide the element
+
+    }
+}
+
+function toggleFreegamesPopup (status) {
+    freegamesPopupActive = status;
+
+    if (freegamesPopupActive) {
+        freegamesPopup.style.opacity = '1';    //show the element
+    } else {
+        freegamesPopup.style.opacity = '0';    //hide the element
+    }
 }
 
 function toggleFreegames() {
@@ -576,6 +617,56 @@ function updateSymbolSettings() {
         }
         symbolSettings[pos.reel][pos.position] = symbols.find(symbol => symbol.name === 'Eye');
     });
+}
+
+function changeHead(event) {
+    let logo = document.getElementById('logo');
+    let logoSmall = document.getElementById('logo-small');
+    let psHead = document.getElementById('alt-head-ps');
+    let fgHead = document.getElementById('alt-head-fg');
+
+
+    if (event == 'powerspins') {
+        logo.style.display = 'none';
+        logoSmall.style.display = 'none';
+        let psHead = document.getElementById('alt-head-ps');
+        psHead.innerHTML = "POWERSPIN " + `${powerspinCount} ` + "von " + `${powerspinsTotal} `;
+        psHead.style.display = 'block';
+    } else if (event == 'freegames') {
+        logo.style.display = 'none';
+        logoSmall.style.display = 'none';
+        fgHead.innerHTML = "FREEGAME " + `${freegamesCount} ` + "von " + `${freegamesTotal} `
+        fgHead.style.display = 'block'
+    } else if (event == 'default') {
+        psHead.style.display = 'none';
+        fgHead.style.display = 'none';
+        if (window.matchMedia("(max-width: 930px)").matches) {
+            logoSmall.style.display = 'block';
+        } else {
+            logo.style.display = 'block';
+        }
+    }
+}
+
+function updateHead(event) {
+    if (event == 'powerspins') {
+        let psHead = document.getElementById('alt-head-ps');
+        if (window.matchMedia("(max-width: 930px)").matches) {
+            psHead.innerHTML = "POWERSPIN " + `${powerspinCount} ` + "/ " + `${powerspinsTotal} `;
+
+        } else {
+            psHead.innerHTML = "POWERSPIN " + `${powerspinCount} ` + "von " + `${powerspinsTotal} `;
+        }
+
+    } else if (event == 'freegames') {
+        let fgHead = document.getElementById('alt-head-fg');
+        
+        if (window.matchMedia("(max-width: 930px)").matches) {
+            fgHead.innerHTML = "FREEGAME " + `${freegamesCount} ` + "/ " + `${freegamesTotal} `;
+
+        } else {
+            fgHead.innerHTML = "FREEGAME " + `${freegamesCount} ` + "von " + `${freegamesTotal} `;
+        }    }
 }
 
 // Initial setup

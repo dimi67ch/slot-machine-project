@@ -1,3 +1,11 @@
+@font-face {
+    font-family: 'fasolada';
+    src: url('gelio/Gelio\ Fasolada.ttf') format('woff'),
+         url('gelio/Gelio\ Fasolada.ttf') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
 body {
     height: 100vh;
     width: 100vw;
@@ -29,6 +37,13 @@ body {
 
 #logo-small {
     display: none;
+}
+
+.alt-head {
+    font-family: 'fasolada';
+    display: none;
+    font-size: 3.5em;
+    color: dodgerblue;
 }
 
 #slot-machine {
@@ -187,6 +202,12 @@ body {
     #logo-small {
         display: block;
         height: 100%;
+    }
+
+    .alt-head {
+        font-size: 3em;
+        align-self: center;
+        padding-left: 10%;
     }
       
     #slot-machine {
