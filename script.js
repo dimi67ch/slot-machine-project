@@ -248,7 +248,7 @@ function spinReels() {
                         }
                         checkForWins(); // Überprüfe auf Gewinne
                         
-                        if (freegamesCount > 1) {
+                        if (freegamesCount > 0) {
                             symbolSettings = {}; // Reset symbolSettings for each spin
                             shiftEyePositions();
                             updateSymbolSettings();
@@ -301,7 +301,6 @@ function animateReel(reel, reelIndex, callback) {
             }
         }
         
-
         if (window.matchMedia("(max-width: 930px)").matches) {
             if (position < 750) {
                 requestAnimationFrame(animate);
