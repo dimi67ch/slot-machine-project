@@ -147,7 +147,7 @@ function spinReels() {
         document.getElementById('freegames-win').style.display = 'none';
         toggleFreegamesPopup(true); // show the element
         introFreegames = false;
-        changeHead('freegames')
+        changeHead('freegames');
         return;
     }
 
@@ -157,7 +157,9 @@ function spinReels() {
         powerspinWin = 0;
         togglePowerspins();
         powerspinCount = 0;
+        powerspinsTotal = 7;
         changeHead('default');
+        selectBetBox.disabled = false;
     }
 
     if (freegamesCount == freegamesTotal) {
@@ -166,7 +168,9 @@ function spinReels() {
         freegamesWin = 0;
         toggleFreegames();
         freegamesCount = 0;
+        freegamesTotal = 10;
         changeHead('default');
+        selectBetBox.disabled = false;
     }
 
     let symbolsToUse;
@@ -227,6 +231,11 @@ function spinReels() {
                     completedReels++;
                     if (completedReels === reels.length) {
                         isSpinning = false; // Spin abgeschlossen
+                        document.getElementById('spin-button').disabled = false; // Entsperre den Button nach allen Spins
+                        if (!freegames) {
+                            checkForPowerspins();
+                        }
+                        checkForFreegames();
                         if (powerspinCount == powerspinsTotal) {
                             document.getElementById('popup-description').style.display = 'none';
                             document.getElementById('powerspin-win').style.display = 'block';
@@ -237,11 +246,6 @@ function spinReels() {
                             document.getElementById('freegames-win').style.display = 'block';
                             toggleFreegamesPopup(true);    //show the element
                         }
-                        document.getElementById('spin-button').disabled = false; // Entsperre den Button nach allen Spins
-                        if (!freegames) {
-                            checkForPowerspins();
-                        }
-                        checkForFreegames();
                         checkForWins(); // Überprüfe auf Gewinne
                         
                         if (freegamesCount > 1) {
