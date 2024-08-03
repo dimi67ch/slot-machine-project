@@ -276,6 +276,14 @@ function spinReels() {
     // Entferne die roten Rahmen von vorherigen Spins
     removeHighlightFromSymbols();
 
+    let reelDelay;
+    if (window.matchMedia("(max-width: 930px)").matches) {
+        reelDelay = 180;
+    } else {
+        reelDelay = 250;
+    }
+
+
     // Force a reflow to ensure initial styles are applied
     setTimeout(() => {
 
@@ -328,7 +336,7 @@ function spinReels() {
                         }
                     }
                 });
-            }, i * 250); // Verzögerung von 250ms zwischen den Walzen
+            }, i * reelDelay); // Verzögerung von 250ms zwischen den Walzen
         });
     }, 200);
 }
@@ -381,7 +389,7 @@ function animateReel(reel, reelIndex, callback) {
         }
 
         if (window.matchMedia("(max-width: 930px)").matches) {
-            if (position < 750) {
+            if (position < 375) {
                 requestAnimationFrame(animate);
             } else {
                 // Ausgabe der Symbole nach dem Spin
