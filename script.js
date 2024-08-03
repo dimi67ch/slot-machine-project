@@ -698,9 +698,9 @@ function createEyeOverlay(imgElement) {
                 overlay.className = 'eye-overlay';
 
                 if (superspins) {
-                    overlay.src = '../assets/golden_eye.png';
+                    overlay.src = './assets/golden_eye.png';
                 } else {
-                    overlay.src = '../assets/eye.png';
+                    overlay.src = './assets/eye.png';
                 }
 
                 let rect = imgElement.getBoundingClientRect();
