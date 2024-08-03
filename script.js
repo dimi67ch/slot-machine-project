@@ -1,38 +1,49 @@
 document.getElementById('spin-button').addEventListener('click', spinReels);
 
 const symbols = [
-    { name: 'Eye', src: './assets/eye.svg', probability: 0.08 },
-    { name: 'J', src: './assets/J.svg', probability: 0.16 },
+    { name: 'Eye', src: './assets/eye.png', probability: 0.05 },
+    { name: 'J', src: './assets/J.svg', probability: 0.14 },
     { name: 'Q', src: './assets/Q.svg', probability: 0.14 },
-    { name: 'K', src: './assets/K.svg', probability: 0.13 },
+    { name: 'K', src: './assets/K.svg', probability: 0.12 },
     { name: 'A', src: './assets/A.svg', probability: 0.12 },
-    { name: 'Medusa', src: './assets/medusa.jpg', probability: 0.09 },
-    { name: 'Achilles', src: './assets/achilles.jpg', probability: 0.08 },
-    { name: 'Aristoteles', src: './assets/aristoteles.jpg', probability: 0.07 },
-    { name: 'Alexander', src: './assets/alexander.jpg', probability: 0.06 },
-    { name: 'Zeus', src: './assets/zeus.jpg', probability: 0.07 }
+    { name: 'Medusa', src: './assets/medusa.png', probability: 0.10 },
+    { name: 'Achilles', src: './assets/achilles.png', probability: 0.08 },
+    { name: 'Aristoteles', src: './assets/aristoteles.png', probability: 0.08 },
+    { name: 'Archimedes', src: './assets/archimedes.png', probability: 0.6 },
+    { name: 'Alexander', src: './assets/alexander.png', probability: 0.06 },
+    { name: 'Zeus', src: './assets/zeus.jpg', probability: 0.05 }
 ];
 
 const powerspinSymbols = [
-    { name: 'Medusa', src: './assets/medusa.jpg', probability: 0.30 },
-    { name: 'Achilles', src: './assets/achilles.jpg', probability: 0.25 },
-    { name: 'Aristoteles', src: './assets/aristoteles.jpg', probability: 0.20 },
-    { name: 'Alexander', src: './assets/alexander.jpg', probability: 0.15 },
+    { name: 'Medusa', src: './assets/medusa.png', probability: 0.23 },
+    { name: 'Achilles', src: './assets/achilles.png', probability: 0.22 },
+    { name: 'Aristoteles', src: './assets/aristoteles.png', probability: 0.20 },
+    { name: 'Archimedes', src: './assets/archimedes.png', probability: 0.15 },
+    { name: 'Alexander', src: './assets/alexander.png', probability: 0.10 },
     { name: 'Zeus', src: './assets/zeus.jpg', probability: 0.10 }
 ];
 
 const freegamesSymbols = [
-    //{ name: 'GoldenEye', src: './assets/golden_eye.svg', probability: 0.01 },
-    { name: 'Eye', src: './assets/eye.svg', probability: 0.02 },
-    { name: 'J', src: './assets/J.svg', probability: 0.15 },
+    { name: 'Eye', src: './assets/eye.png', probability: 0.02 },
+    { name: 'J', src: './assets/J.svg', probability: 0.14 },
     { name: 'Q', src: './assets/Q.svg', probability: 0.14 },
-    { name: 'K', src: './assets/K.svg', probability: 0.13 },
-    { name: 'A', src: './assets/A.svg', probability: 0.13 },
-    { name: 'Medusa', src: './assets/medusa.jpg', probability: 0.11 },
-    { name: 'Achilles', src: './assets/achilles.jpg', probability: 0.09 },
-    { name: 'Aristoteles', src: './assets/aristoteles.jpg', probability: 0.08 },
-    { name: 'Alexander', src: './assets/alexander.jpg', probability: 0.07 },
-    { name: 'Zeus', src: './assets/zeus.jpg', probability: 0.06 }
+    { name: 'K', src: './assets/K.svg', probability: 0.12 },
+    { name: 'A', src: './assets/A.svg', probability: 0.12 },
+    { name: 'Medusa', src: './assets/medusa.png', probability: 0.10 },
+    { name: 'Achilles', src: './assets/achilles.png', probability: 0.09 },
+    { name: 'Aristoteles', src: './assets/aristoteles.png', probability: 0.09 },
+    { name: 'Archimedes', src: './assets/archimedes.png', probability: 0.07 },
+    { name: 'Alexander', src: './assets/alexander.png', probability: 0.07 },
+    { name: 'Zeus', src: './assets/zeus.jpg', probability: 0.04 }
+];
+
+const superspinSymbols = [
+    { name: 'GoldenEye', src: './assets/golden_eye.png', probability: 0.02 },
+    { name: 'Medusa', src: './assets/medusa.png', probability: 0.27 },
+    { name: 'Achilles', src: './assets/achilles.png', probability: 0.25 },
+    { name: 'Aristoteles', src: './assets/aristoteles.png', probability: 0.21 },
+    { name: 'Alexander', src: './assets/alexander.png', probability: 0.15 },
+    { name: 'Zeus', src: './assets/zeus.jpg', probability: 0.10 }
 ];
 
 const lines = [
@@ -49,6 +60,7 @@ const lines = [
 
 let powerspinsPopup = document.getElementById('powerspins-popup');
 let freegamesPopup = document.getElementById('freegames-popup');
+let superspinsPopup = document.getElementById('superspins-popup');
 
 let bankValue = Number(document.getElementById('bank').innerText);
 let selectBetBox = document.getElementById('select-bet');
@@ -70,20 +82,28 @@ let freegamesWin = 0;
 let freegamesPopupActive = false;
 let introFreegames = false;
 
+let superspins = false;
+let superspinsTotal = 10;
+let superspinCount = 0;
+let superspinWin = 0;
+let superspinsPopupActive = false;
+let introSuperspins = false;
+
 let symbolSettings = {}; // { reelIndex: { positionIndex: symbol } }
 let eyePositions = [];
 let shiftedEyePositions = [];
 
 const symbolPayouts = {
-    'J': { 3: 1, 4: 2, 5: 3 },
-    'Q': { 3: 1, 4: 2, 5: 3 },
-    'K': { 3: 2, 4: 3, 5: 4 },
-    'A': { 3: 2, 4: 3, 5: 4 },
-    'Medusa': { 2: 1, 3: 2, 4: 4, 5: 5 },
-    'Achilles': { 2: 1, 3: 3, 4: 4, 5: 5 },
-    'Aristoteles': { 2: 2, 3: 3.5, 4: 4.5, 5: 6 },
-    'Alexander': { 2: 2, 3: 4, 4: 6, 5: 10 },
-    'Zeus': { 2: 3, 3: 5, 4: 8, 5: 15 }
+    'J': { 3: 1, 4: 4, 5: 20 },
+    'Q': { 3: 1, 4: 4, 5: 20 },
+    'K': { 3: 2, 4: 5, 5: 25 },
+    'A': { 3: 2, 4: 5, 5: 25 },
+    'Medusa': { 2: 1, 3: 6, 4: 100, 5: 250 },
+    'Achilles': { 2: 2, 3: 10, 4: 150, 5: 500 },
+    'Aristoteles': { 2: 2, 3: 10, 4: 150, 5: 500 },
+    'Archimedes' : {2: 2, 3: 15, 4: 250, 5: 1000},
+    'Alexander': { 2: 2, 3: 15, 4: 250, 5: 1000 },
+    'Zeus': { 2: 3, 3: 20, 4: 500, 5: 2000 }
 };
 
 function getRandomSymbol() {
@@ -96,6 +116,8 @@ function getRandomSymbol() {
         symbolsToUse = powerspinSymbols;
     } else if (freegames) {
         symbolsToUse = freegamesSymbols;
+    } else if (superspins) {
+        symbolsToUse = superspinSymbols;
     } else {
         symbolsToUse = symbols;
     }
@@ -133,6 +155,8 @@ function createReelSymbols(reel) {
 
 function spinReels() {
 
+    // ========== INTROS ==========
+
     if (introPowerspins) {
         document.getElementById('popup-description').style.display = 'flex';
         document.getElementById('powerspin-win').style.display = 'none';
@@ -150,6 +174,17 @@ function spinReels() {
         changeHead('freegames');
         return;
     }
+
+    if (introSuperspins) {
+        document.getElementById('popup-description').style.display = 'flex';
+        document.getElementById('superspin-win').style.display = 'none';
+        toggleSuperspinsPopup(true); // show the element
+        introSuperspins = false;
+        changeHead('superspins');
+        return;
+    }
+
+    // ========== END SPECIAL SPINS ==========
 
     if (powerspinCount == powerspinsTotal) {
         togglePowerspinsPopup(false);   //hide the element
@@ -173,6 +208,19 @@ function spinReels() {
         selectBetBox.disabled = false;
     }
 
+    if (superspinCount == superspinsTotal) {
+        toggleSuperspinsPopup(false);   //hide the element
+        document.getElementById("superspin-win").innerHTML = "";
+        superspinWin = 0;
+        toggleSuperspins();
+        superspinCount = 0;
+        superspinsTotal = 10;
+        changeHead('default');
+        selectBetBox.disabled = false;
+    }
+
+    // ========== START SPECIAL SPINS ==========
+
     let symbolsToUse;
     if (powerspins) {
         togglePowerspinsPopup(false); // //hide the element
@@ -190,6 +238,17 @@ function spinReels() {
             let eyeSymbols = document.querySelectorAll('[data-name="Eye"]');
             eyeSymbols.forEach(symbol => createEyeOverlay(symbol));
         }
+    } else if (superspins) {
+        toggleSuperspinsPopup(false); // //hide the element
+        superspinCount += 1;
+        symbolsToUse = superspinSymbols;
+        updateHead('superspins');
+
+        if (superspinCount > 1) {
+            // Find all Eye symbols and create overlay images
+            let eyeSymbols = document.querySelectorAll('[data-name="GoldenEye"]');
+            eyeSymbols.forEach(symbol => createEyeOverlay(symbol));
+        }
     }
     else {
         symbolsToUse = symbols;
@@ -202,7 +261,7 @@ function spinReels() {
     eyePositions = [];
     shiftedEyePositions = [];
 
-    if (!powerspins && !freegames) {
+    if (!powerspins && !freegames && !superspins) {
         bankValue -= betValue;
         document.getElementById('bank').innerText = bankValue;
     }
@@ -220,7 +279,7 @@ function spinReels() {
     // Force a reflow to ensure initial styles are applied
     setTimeout(() => {
 
-        if (freegamesCount > 1) {
+        if (freegamesCount > 1 || superspinCount > 1) {
             // Move the overlays
             moveEyeOverlays();
         }
@@ -232,10 +291,16 @@ function spinReels() {
                     if (completedReels === reels.length) {
                         isSpinning = false; // Spin abgeschlossen
                         document.getElementById('spin-button').disabled = false; // Entsperre den Button nach allen Spins
-                        if (!freegames) {
+                        // Hier
+                        if (!freegames && !powerspins) {
+                            checkForSuperspins();
+                        }
+                        if (!freegames && !superspins) {
                             checkForPowerspins();
                         }
-                        checkForFreegames();
+                        if (!superspins) {
+                            checkForFreegames();
+                        }
                         if (powerspinCount == powerspinsTotal) {
                             document.getElementById('popup-description').style.display = 'none';
                             document.getElementById('powerspin-win').style.display = 'block';
@@ -246,9 +311,14 @@ function spinReels() {
                             document.getElementById('freegames-win').style.display = 'block';
                             toggleFreegamesPopup(true);    //show the element
                         }
+                        if (superspinCount == superspinsTotal) {
+                            document.getElementById('popup-description-img').style.display = 'none';
+                            document.getElementById('superspin-win').style.display = 'block';
+                            toggleSuperspinsPopup(true);    //show the element
+                        }
                         checkForWins(); // Überprüfe auf Gewinne
                         
-                        if (freegamesCount > 0) {
+                        if (freegamesCount > 0 || superspinCount > 0) {
                             symbolSettings = {}; // Reset symbolSettings for each spin
                             shiftEyePositions();
                             updateSymbolSettings();
@@ -293,14 +363,15 @@ function animateReel(reel, reelIndex, callback) {
 
             // Neue Symbole während des Spinnens generieren
             if (newPos - 100 < 0) {
-                let chosenSymbol = symbolSettings[reelIndex] && symbolSettings[reelIndex][i] && freegames
+                let chosenSymbol = symbolSettings[reelIndex] && symbolSettings[reelIndex][i]
+                    && (freegames || superspins)
                     ? symbolSettings[reelIndex][i]
                     : getRandomSymbol();
                 symbol.firstChild.src = chosenSymbol.src;
                 symbol.firstChild.dataset.name = chosenSymbol.name; // Name als Datenattribut speichern
             }
         }
-        
+
         if (window.matchMedia("(max-width: 930px)").matches) {
             if (position < 750) {
                 requestAnimationFrame(animate);
@@ -323,6 +394,8 @@ function animateReel(reel, reelIndex, callback) {
 }
 
 function logReelSymbols(reel, reelIndex) {
+
+    wild = returnWild();
     let symbols = reel.getElementsByClassName('symbol');
     results[reelIndex] = [];
     for (let i = 0; i < 3; i++) {
@@ -330,7 +403,7 @@ function logReelSymbols(reel, reelIndex) {
         let symbolName = symbol.firstChild.dataset.name;
         results[reelIndex].push(symbolName);
 
-        if (symbolName === 'Eye') {
+        if (symbolName == wild) {
             eyePositions.push({ reel: reelIndex, position: i });
         }
     }
@@ -383,6 +456,37 @@ function checkForFreegames() {
     }
 }
 
+function checkForSuperspins () {
+    let eyeCount = 0;
+    let goldenEyeCount = 0;
+    let zeusCount = 0;
+
+    for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 3; j++) {
+            let symbolName = results[i][j];
+            if (symbolName == 'Eye') {
+                eyeCount++;
+            }
+            if (symbolName == 'GoldenEye') {
+                goldenEyeCount++;
+            }
+            if (symbolName == 'Zeus') {
+                zeusCount++;
+            }
+        }
+    }
+
+    if (superspins) {
+        if (goldenEyeCount > 0) {
+            superspinsTotal++;
+        }
+    } else if (!superspins && eyeCount > 2 && zeusCount > 2) {
+        toggleSuperspins();
+        selectBetBox.disabled = true;
+        introSuperspins = true;
+    }
+}
+
 function togglePowerspins() {
     powerspins = !powerspins;
 }
@@ -408,103 +512,135 @@ function toggleFreegamesPopup (status) {
     }
 }
 
+function toggleSuperspinsPopup (status) {
+    superspinsPopupActive = status;
+
+    if (superspinsPopupActive) {
+        superspinsPopup.style.opacity = '1';    //show the element
+    } else {
+        superspinsPopup.style.opacity = '0';    //hide the element
+    }
+}
+
 function toggleFreegames() {
     freegames = !freegames;
+}
+
+function toggleSuperspins() {
+    superspins = !superspins;
 }
 
 function checkForWins() {
     let winningLines = {};
     let totalWin = 0;
+
+    let wild = returnWild();
   
     for (let line of lines) {
-      let consecutiveCount = 0;
-      let lastSymbol = null;
-      let currentWinningPositions = [];
+        let consecutiveCount = 0;
+        let lastSymbol = null;
+        let currentWinningPositions = [];
   
-      for (let i = 0; i < line.length; i++) {
-        let position = line[i];
-        let reelIndex = position[0];    //reelIndex: Spalte
-        let symbolIndex = position[1];  //symbolIndex: Zeile
-        let symbolName = results[reelIndex][symbolIndex];
+        for (let i = 0; i < line.length; i++) {
+            let position = line[i];
+            let reelIndex = position[0];    //reelIndex: Spalte
+            let symbolIndex = position[1];  //symbolIndex: Zeile
+            let symbolName = results[reelIndex][symbolIndex];
   
-        if (lastSymbol == null && results[0][symbolIndex] == 'Eye') {
+            if (lastSymbol == null && results[0][symbolIndex] == wild) {
 
-          let nextPosition = line[i+1];
-          let nextReelIndex = nextPosition[0];    //reelIndex: Spalte
-          let nextSymbolIndex = nextPosition[1];  //symbolIndex: Zeile
-          let nextSymbolName = results[nextReelIndex][nextSymbolIndex];
+                let nextPosition = line[i+1];
+                let nextReelIndex = nextPosition[0];    //reelIndex: Spalte
+                let nextSymbolIndex = nextPosition[1];  //symbolIndex: Zeile
+                let nextSymbolName = results[nextReelIndex][nextSymbolIndex];
 
-          symbolName = nextSymbolName;
-          lastSymbol = symbolName;
-
-          if (nextSymbolName == 'Eye') {
-
-            let TwoNextPosition = line[i+2];
-            let TwoNextReelIndex = TwoNextPosition[0];    //reelIndex: Spalte
-            let TwoNextSymbolIndex = TwoNextPosition[1];  //symbolIndex: Zeile
-            let TwoNextSymbolName = results[TwoNextReelIndex][TwoNextSymbolIndex];
-
-            symbolName = TwoNextSymbolName;
-            lastSymbol = symbolName;
-
-            if (TwoNextSymbolName == 'Eye') {
-
-                let ThreeNextPosition = line[i+3];
-                let ThreeNextReelIndex = ThreeNextPosition[0];    //reelIndex: Spalte
-                let ThreeNextSymbolIndex = ThreeNextPosition[1];  //symbolIndex: Zeile
-                let ThreeNextSymbolName = results[ThreeNextReelIndex][ThreeNextSymbolIndex];
-
-                symbolName = ThreeNextSymbolName;
+                symbolName = nextSymbolName;
                 lastSymbol = symbolName;
 
-                if (ThreeNextSymbolName == 'Eye') {
+                if (nextSymbolName == wild) {
 
-                    let FourNextPosition = line[i+4];
-                    let FourNextReelIndex = FourNextPosition[0];    //reelIndex: Spalte
-                    let FourNextSymbolIndex = FourNextPosition[1];  //symbolIndex: Zeile
-                    let FourNextSymbolName = results[FourNextReelIndex][FourNextSymbolIndex];
+                    let TwoNextPosition = line[i+2];
+                    let TwoNextReelIndex = TwoNextPosition[0];    //reelIndex: Spalte
+                    let TwoNextSymbolIndex = TwoNextPosition[1];  //symbolIndex: Zeile
+                    let TwoNextSymbolName = results[TwoNextReelIndex][TwoNextSymbolIndex];
 
-                    symbolName = FourNextSymbolName;
+                    symbolName = TwoNextSymbolName;
                     lastSymbol = symbolName;
 
-                    if (FourNextSymbolName == 'Eye') {
-                        symbolName = 'Zeus';
+                    if (TwoNextSymbolName == wild) {
+
+                        let ThreeNextPosition = line[i+3];
+                        let ThreeNextReelIndex = ThreeNextPosition[0];    //reelIndex: Spalte
+                        let ThreeNextSymbolIndex = ThreeNextPosition[1];  //symbolIndex: Zeile
+                        let ThreeNextSymbolName = results[ThreeNextReelIndex][ThreeNextSymbolIndex];
+
+                        symbolName = ThreeNextSymbolName;
                         lastSymbol = symbolName;
+
+                        if (ThreeNextSymbolName == wild) {
+
+                            let FourNextPosition = line[i+4];
+                            let FourNextReelIndex = FourNextPosition[0];    //reelIndex: Spalte
+                            let FourNextSymbolIndex = FourNextPosition[1];  //symbolIndex: Zeile
+                            let FourNextSymbolName = results[FourNextReelIndex][FourNextSymbolIndex];
+
+                            symbolName = FourNextSymbolName;
+                            lastSymbol = symbolName;
+
+                            if (FourNextSymbolName == wild) {
+                                symbolName = 'Zeus';
+                                lastSymbol = symbolName;
+                            }
+                        }
                     }
                 }
+            } 
+            
+            if (i === 0 || symbolName === lastSymbol || symbolName == wild) {
+                if ( symbolName == wild) {
+                    symbolName = lastSymbol;
+                }
+                consecutiveCount++;
+                lastSymbol = symbolName;
+                currentWinningPositions.push(position); // Position zur potenziellen Gewinnreihe hinzufügen
+            } else {
+                break; // Unterbrechung der Kette, keine weiteren Symbole in dieser Linie prüfen
             }
-          }
-        } if (i === 0 || symbolName === lastSymbol || symbolName == 'Eye') {
-            if ( symbolName == 'Eye') {
-              symbolName = lastSymbol;
-            }
-          consecutiveCount++;
-          lastSymbol = symbolName;
-          currentWinningPositions.push(position); // Position zur potenziellen Gewinnreihe hinzufügen
-        } else {
-          break; // Unterbrechung der Kette, keine weiteren Symbole in dieser Linie prüfen
-      }
-  
-        if (consecutiveCount >= 2 && symbolPayouts[symbolName] && symbolPayouts[symbolName][consecutiveCount]) {
-          if (!winningLines[line] || consecutiveCount > winningLines[line].consecutiveCount) {
+        
+            if (consecutiveCount >= 2 && symbolPayouts[symbolName] && symbolPayouts[symbolName][consecutiveCount]) {
+                if (!winningLines[line] || consecutiveCount > winningLines[line].consecutiveCount) {
                     winningLines[line] = { symbolName, consecutiveCount, positions: [...currentWinningPositions] };
                 }
-          }
+            }
         }
-      }
+    }
   
     // Berechnung des gesamten Gewinns und Hervorhebung aller Gewinnlinien
     for (let line in winningLines) {
-      let win = winningLines[line];
+        let win = winningLines[line];
         //console.log("betValue: "+betValue)
-      totalWin += Number(symbolPayouts[win.symbolName][win.consecutiveCount]) * betValue;
+        totalWin += Number(symbolPayouts[win.symbolName][win.consecutiveCount]) * betValue;
+
         //console.log(`Gewinn mit Symbol "${win.symbolName}" auf Linie "${JSON.stringify(line)}". Anzahl der aufeinanderfolgenden Symbole: ${win.consecutiveCount}`);        
         highlightWinningSymbols(win.positions);
     }
+
+    let goldenEyeCount = 0;
+        for (let i = 0; i < 5; i++) {
+            for (let j = 0; j < 3; j++) {
+                let symbolName = results[i][j];
+                if (symbolName == 'GoldenEye') {
+                    goldenEyeCount++;
+                }
+            }
+        }
+        if (goldenEyeCount > 0) {
+            totalWin *= goldenEyeCount * 2;
+        }
     
     if (powerspinCount > 0) {
         powerspinWin += totalWin;
-        console.log("Powerspin "+powerspinCount+" / "+powerspinsTotal+", Gewinn: "+totalWin+", Gesamt: "+powerspinWin)
+        //console.log("Powerspin "+powerspinCount+" / "+powerspinsTotal+", Gewinn: "+totalWin+", Gesamt: "+powerspinWin)
     }
     if (powerspinCount == powerspinsTotal) {
         document.getElementById("powerspin-win").innerHTML = powerspinWin;
@@ -512,10 +648,18 @@ function checkForWins() {
 
     if (freegamesCount > 0) {
         freegamesWin += totalWin;
-        console.log("Freegame "+freegamesCount+" / "+freegamesTotal+", Gewinn: "+totalWin+", Gesamt: "+freegamesWin)
+        //console.log("Freegame "+freegamesCount+" / "+freegamesTotal+", Gewinn: "+totalWin+", Gesamt: "+freegamesWin)
     }
     if (freegamesCount == freegamesTotal) {
         document.getElementById("freegames-win").innerHTML = freegamesWin;
+    }
+
+    if (superspinCount > 0) {
+        superspinWin += totalWin;
+        //console.log("Superspin "+superspinCount+" / "+superspinsTotal+", Gewinn: "+totalWin+", Gesamt: "+superspinWin)
+    }
+    if (superspinCount == superspinsTotal) {
+        document.getElementById("superspin-win").innerHTML = superspinWin;
     }
 
     // Anzeigen des gesamten Gewinns
@@ -552,7 +696,12 @@ function createEyeOverlay(imgElement) {
 
                 let overlay = document.createElement('img');
                 overlay.className = 'eye-overlay';
-                overlay.src = '../assets/eye.svg';
+
+                if (superspins) {
+                    overlay.src = '../assets/golden_eye.png';
+                } else {
+                    overlay.src = '../assets/eye.png';
+                }
 
                 let rect = imgElement.getBoundingClientRect();
                 overlay.style.position = 'absolute';
@@ -613,12 +762,22 @@ function shiftEyePositions() {
 }
 
 function updateSymbolSettings() {
+
+    let symbolsToUse;
+
+    if (superspins) {
+        symbolsToUse = superspinSymbols;
+    } else {
+        symbolsToUse = symbols;
+    }
     // Setze die Eye Symbole basierend auf shiftedEyePositions
+    let wild = returnWild();
+
     shiftedEyePositions.forEach(pos => {
         if (!symbolSettings[pos.reel]) {
             symbolSettings[pos.reel] = {};
         }
-        symbolSettings[pos.reel][pos.position] = symbols.find(symbol => symbol.name === 'Eye');
+        symbolSettings[pos.reel][pos.position] = symbolsToUse.find(symbol => symbol.name == wild);
     });
 }
 
@@ -627,22 +786,28 @@ function changeHead(event) {
     let logoSmall = document.getElementById('logo-small');
     let psHead = document.getElementById('alt-head-ps');
     let fgHead = document.getElementById('alt-head-fg');
-
+    let ssHead = document.getElementById('alt-head-ss');
 
     if (event == 'powerspins') {
         logo.style.display = 'none';
         logoSmall.style.display = 'none';
         let psHead = document.getElementById('alt-head-ps');
-        psHead.innerHTML = "POWERSPIN " + `${powerspinCount} ` + "von " + `${powerspinsTotal} `;
+        psHead.innerHTML = "POWERSPIN " + `${powerspinCount} ` + "von " + `${powerspinsTotal}`;
         psHead.style.display = 'block';
     } else if (event == 'freegames') {
         logo.style.display = 'none';
         logoSmall.style.display = 'none';
-        fgHead.innerHTML = "FREEGAME " + `${freegamesCount} ` + "von " + `${freegamesTotal} `
+        fgHead.innerHTML = "FREEGAME " + `${freegamesCount} ` + "von " + `${freegamesTotal}`
         fgHead.style.display = 'block'
+    } else if (event == 'superspins') {
+        logo.style.display = 'none';
+        logoSmall.style.display = 'none';
+        ssHead.innerHTML = "SUPERSPIN " + `${superspinCount} ` + "von " + `${superspinsTotal}`
+        ssHead.style.display = 'block'
     } else if (event == 'default') {
         psHead.style.display = 'none';
         fgHead.style.display = 'none';
+        ssHead.style.display = 'none';
         if (window.matchMedia("(max-width: 930px)").matches) {
             logoSmall.style.display = 'block';
         } else {
@@ -655,21 +820,39 @@ function updateHead(event) {
     if (event == 'powerspins') {
         let psHead = document.getElementById('alt-head-ps');
         if (window.matchMedia("(max-width: 930px)").matches) {
-            psHead.innerHTML = "POWERSPIN " + `${powerspinCount} ` + "/ " + `${powerspinsTotal} `;
+            psHead.innerHTML = "POWERSPIN " + `${powerspinCount} ` + "/ " + `${powerspinsTotal}`;
 
         } else {
-            psHead.innerHTML = "POWERSPIN " + `${powerspinCount} ` + "von " + `${powerspinsTotal} `;
+            psHead.innerHTML = "POWERSPIN " + `${powerspinCount} ` + "von " + `${powerspinsTotal}`;
         }
 
     } else if (event == 'freegames') {
         let fgHead = document.getElementById('alt-head-fg');
         
         if (window.matchMedia("(max-width: 930px)").matches) {
-            fgHead.innerHTML = "FREEGAME " + `${freegamesCount} ` + "/ " + `${freegamesTotal} `;
+            fgHead.innerHTML = "FREEGAME " + `${freegamesCount} ` + "/ " + `${freegamesTotal}`;
 
         } else {
-            fgHead.innerHTML = "FREEGAME " + `${freegamesCount} ` + "von " + `${freegamesTotal} `;
-        }    }
+            fgHead.innerHTML = "FREEGAME " + `${freegamesCount} ` + "von " + `${freegamesTotal}`;
+        }    
+    } else if (event == 'superspins') {
+        let ssHead = document.getElementById('alt-head-ss');
+        
+        if (window.matchMedia("(max-width: 930px)").matches) {
+            ssHead.innerHTML = "SUPERSPINS " + `${superspinCount} ` + "/ " + `${superspinsTotal}`;
+
+        } else {
+            ssHead.innerHTML = "SUPERSPINS " + `${superspinCount} ` + "von " + `${superspinsTotal}`;
+        }    
+    }
+}
+
+function returnWild () {
+    if (superspins) {
+        return 'GoldenEye';
+    } else {
+        return 'Eye';
+    }
 }
 
 // Initial setup
@@ -698,3 +881,16 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 });
 
+document.getElementById('guide-button').addEventListener('click', function() {
+    let guide = document.getElementById('guide');
+    guide.style.opacity = '1';
+    guide.style.zIndex = '2000';
+    document.getElementById('spin-button').disabled = true;
+});
+
+document.getElementById('close-guide').addEventListener('click', function() {
+    let guide = document.getElementById('guide');
+    guide.style.opacity = '0';
+    guide.style.zIndex = '-1000';
+    document.getElementById('spin-button').disabled = false;
+});

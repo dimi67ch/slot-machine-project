@@ -19,8 +19,8 @@ body {
     color: #fff;
     font-family: Arial, sans-serif;
     margin: 0;
-    /*background-image: url(./assets/cover.gif);
-    background-size: cover;*/
+    background-image: url(./assets/cover.gif);
+    background-size: cover;
 }
 
 #header {
@@ -90,12 +90,43 @@ body {
 }
 
 #guide {
+    opacity: 0;
+    justify-self: center;
+    position: fixed;
+    z-index: -1000;
+    transition: opacity 0.5s;
+}
+
+#guide-img {
+    top: 0;
+    height: 100vh;
+}
+
+#close-guide {
+    background-color: rgba(145, 0, 0, 0.7);
+    z-index: 2010;
+    font-size: xx-large;
+    border: none;
+    color: white;
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 10vh;
+    width: 10vh;
+}
+
+#close-guide :hover {
+    background-color: rgb(145, 0, 0);
+    cursor: pointer;
+}
+
+#guide-button {
     display: none;
     background-color: rgb(151, 151, 10);
     border: 2px white solid;
 }
 
-#spin-button, #guide {
+#spin-button, #guide-button {
     width: calc(10vw + 10px);
     cursor: pointer;
     justify-content: center;
@@ -147,7 +178,7 @@ body {
     animation: blink 1s infinite; /* Animation hinzufügen */
 }
 
-#powerspins-popup, #freegames-popup {
+#powerspins-popup, #freegames-popup, #superspins-popup {
     opacity: 0; /* Initialzustand: Ausgeblendet */
     position: fixed;
     top: 20%; 
@@ -177,9 +208,10 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: center;
+    align-items: center;
 }
 
-#popup-description-img > img {
+#popup-description img {
     width: 5vw;
     height: 5vw;
 }
@@ -231,7 +263,7 @@ body {
         padding-right: 10%;
     }
 
-    #guide {
+    #guide-button {
         display: flex;
         justify-content: center;
         align-content: center;

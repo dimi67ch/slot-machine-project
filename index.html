@@ -6,31 +6,53 @@
     <title>Slot Machine</title>
     <link rel="stylesheet" href="styles.css">
     <script src="script.js" defer></script>
+    <link rel="icon" href="./assets/favicon.png" type="image/png">
 </head>
 <body>
+    <div id="guide">
+        <img id="guide-img" src="./assets/guide.png" alt="Guide">
+        <button id="close-guide">X</button>   
+    </div>
     <div id="header">
         <img id="logo-small" src="./assets/logo-small.svg" alt="Logo">
         <img id="logo" src="./assets/Logo.svg" alt="Logo">
         <div id="alt-head-fg" class="alt-head">FREEGAME</div>
         <div id="alt-head-ps" class="alt-head">POWERSPIN</div>
+        <div id="alt-head-ss" class="alt-head">SUPERSPIN</div>
         <div id="powerspins-popup">
-            <h2>7 POWERSPINS</h2>
+            <h2>POWERSPINS</h2>
             <p id="powerspin-win"></p>
             <div id="popup-description">
                 <div id="popup-description-img">
-                    <img src="./assets/medusa.jpg" alt="Medusa">
-                    <img src="./assets/achilles.jpg" alt="Achilles">
-                    <img src="./assets/aristoteles.jpg" alt="Aristoteles">
-                    <img src="./assets/alexander.jpg" alt="Alexander">
+                    <img src="./assets/medusa.png" alt="Medusa">
+                    <img src="./assets/achilles.png" alt="Achilles">
+                    <img src="./assets/aristoteles.png" alt="Aristoteles">
+                    <img src="./assets/alexander.png" alt="Alexander">
                     <img src="./assets/zeus.jpg" alt="Zeus">
                 </div>
                 <div>remain</div>
             </div>
         </div>
         <div id="freegames-popup">
-            <h2>10 FREEGAMES</h2>
+            <h2>FREEGAMES</h2>
             <p id="freegames-win"></p>
             <div id="popup-description">
+                <img src="./assets/eye.png" alt="Eye">
+                <div>Sticky Wild</div>
+            </div>
+        </div>
+        <div id="superspins-popup">
+            <h2>SUPERSPINS</h2>
+            <p id="superspin-win"></p>
+            <div id="popup-description">
+                <div id="popup-description-img">
+                    <img src="./assets/eye.png" alt="Eye">
+                    <div>&#9866;</div>
+                    <div> TURNS TO </div>
+                    <div>&rightarrow;</div>
+                    <img src="./assets/golden_eye.png" alt="Golden Eye">
+                </div>
+                <div>Sticky Wild & Total Wins x2</div>
             </div>
         </div>
     </div>
@@ -42,7 +64,7 @@
         <div class="reel" id="reel5"></div>
     </div>
     <div id="buttons">
-        <button id="guide">GUIDE</button>
+        <button id="guide-button">GUIDE</button>
         <div id="bank-font">BANK</div>
         <div id="bank">1000</div>
         <div id="win-font">WIN</div>
