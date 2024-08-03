@@ -1,6 +1,5 @@
-# slot-machine-project
-
-Name of the Game: `Make No Eye`
+# slot-machine-project: `Make No Eye`
+by Dimitrios Chalatsoglou
 
 ## Symbols
 - J
