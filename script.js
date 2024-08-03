@@ -9,7 +9,7 @@ const symbols = [
     { name: 'Medusa', src: './assets/medusa.png', probability: 0.10 },
     { name: 'Achilles', src: './assets/achilles.png', probability: 0.08 },
     { name: 'Aristoteles', src: './assets/aristoteles.png', probability: 0.08 },
-    { name: 'Archimedes', src: './assets/archimedes.png', probability: 0.6 },
+    { name: 'Archimedes', src: './assets/archimedes.png', probability: 0.06 },
     { name: 'Alexander', src: './assets/alexander.png', probability: 0.06 },
     { name: 'Zeus', src: './assets/zeus.jpg', probability: 0.05 }
 ];
@@ -98,11 +98,11 @@ const symbolPayouts = {
     'Q': { 3: 1, 4: 4, 5: 20 },
     'K': { 3: 2, 4: 5, 5: 25 },
     'A': { 3: 2, 4: 5, 5: 25 },
-    'Medusa': { 2: 1, 3: 6, 4: 100, 5: 250 },
-    'Achilles': { 2: 2, 3: 10, 4: 150, 5: 500 },
-    'Aristoteles': { 2: 2, 3: 10, 4: 150, 5: 500 },
-    'Archimedes' : {2: 2, 3: 15, 4: 250, 5: 1000},
-    'Alexander': { 2: 2, 3: 15, 4: 250, 5: 1000 },
+    'Medusa': { 2: 1, 3: 6, 4: 50, 5: 250 },
+    'Achilles': { 2: 2, 3: 10, 4: 25, 5: 500 },
+    'Aristoteles': { 2: 2, 3: 10, 4: 25, 5: 500 },
+    'Archimedes' : {2: 2, 3: 15, 4: 100, 5: 1000},
+    'Alexander': { 2: 2, 3: 15, 4: 100, 5: 1000 },
     'Zeus': { 2: 3, 3: 20, 4: 500, 5: 2000 }
 };
 
@@ -322,7 +322,7 @@ function spinReels() {
                             symbolSettings = {}; // Reset symbolSettings for each spin
                             shiftEyePositions();
                             updateSymbolSettings();
-    
+                            
                             // Remove all overlays after the spin
                             removeAllEyeOverlays();
                         }
@@ -330,7 +330,7 @@ function spinReels() {
                 });
             }, i * 250); // Verzögerung von 250ms zwischen den Walzen
         });
-    }, 100);
+    }, 200);
 }
 
 function removeHighlightFromSymbols() {
@@ -362,7 +362,15 @@ function animateReel(reel, reelIndex, callback) {
             }
 
             // Neue Symbole während des Spinnens generieren
-            if (newPos - 100 < 0) {
+            let x;
+
+            if (window.matchMedia("(max-width: 930px)").matches) {
+                x = 50;
+            } else {
+                x = 100;
+            }
+
+            if (newPos - x < 0) {
                 let chosenSymbol = symbolSettings[reelIndex] && symbolSettings[reelIndex][i]
                     && (freegames || superspins)
                     ? symbolSettings[reelIndex][i]

@@ -102,9 +102,14 @@ body {
     height: 100vh;
 }
 
+#guide-button {
+    background-color: rgb(151, 151, 10);
+    border: 2px white solid;
+}
+
 #close-guide {
     background-color: rgba(145, 0, 0, 0.7);
-    z-index: 2010;
+    z-index: 3000;
     font-size: xx-large;
     border: none;
     color: white;
@@ -115,15 +120,9 @@ body {
     width: 10vh;
 }
 
-#close-guide :hover {
+#close-guide:hover {
     background-color: rgb(145, 0, 0);
     cursor: pointer;
-}
-
-#guide-button {
-    display: none;
-    background-color: rgb(151, 151, 10);
-    border: 2px white solid;
 }
 
 #spin-button, #guide-button {
