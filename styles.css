@@ -167,7 +167,7 @@ body {
 
 @keyframes blink {
     0% { border-color: red; }
-    50% { border-color: transparent; }
+    50% { border-color: rgba(255, 0, 0, 0.2); }
     100% { border-color: red; }
 }
 
@@ -195,14 +195,14 @@ body {
     align-items: center;
 }
 
-#popup-description {
+.popup-description {
     width: 80%;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-#popup-description-img {
+.popup-description-img {
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -210,7 +210,7 @@ body {
     align-items: center;
 }
 
-#popup-description img {
+.popup-description img {
     width: 5vw;
     height: 5vw;
 }

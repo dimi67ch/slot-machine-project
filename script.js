@@ -98,10 +98,10 @@ const symbolPayouts = {
     'Q': { 3: 1, 4: 4, 5: 20 },
     'K': { 3: 2, 4: 5, 5: 25 },
     'A': { 3: 2, 4: 5, 5: 25 },
-    'Medusa': { 2: 1, 3: 6, 4: 50, 5: 250 },
-    'Achilles': { 2: 2, 3: 10, 4: 25, 5: 500 },
-    'Aristoteles': { 2: 2, 3: 10, 4: 25, 5: 500 },
-    'Archimedes' : {2: 2, 3: 15, 4: 100, 5: 1000},
+    'Medusa': { 3: 6, 4: 50, 5: 250 },
+    'Achilles': { 3: 10, 4: 25, 5: 500 },
+    'Aristoteles': { 3: 10, 4: 25, 5: 500 },
+    'Archimedes' : { 2: 2, 3: 15, 4: 100, 5: 1000},
     'Alexander': { 2: 2, 3: 15, 4: 100, 5: 1000 },
     'Zeus': { 2: 3, 3: 20, 4: 500, 5: 2000 }
 };
@@ -134,7 +134,7 @@ function getRandomSymbol() {
 }
 
 function createReelSymbols(reel) {
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 3; i++) {
         let symbol = document.createElement('div');
         symbol.className = 'symbol';
         
@@ -158,7 +158,7 @@ function spinReels() {
     // ========== INTROS ==========
 
     if (introPowerspins) {
-        document.getElementById('popup-description').style.display = 'flex';
+        document.getElementById('popup-description-ps').style.display = 'flex';
         document.getElementById('powerspin-win').style.display = 'none';
         togglePowerspinsPopup(true); // show the element
         introPowerspins = false;
@@ -167,7 +167,7 @@ function spinReels() {
     }
     
     if (introFreegames) {
-        document.getElementById('popup-description').style.display = 'flex';
+        document.getElementById('popup-description-fg').style.display = 'flex';
         document.getElementById('freegames-win').style.display = 'none';
         toggleFreegamesPopup(true); // show the element
         introFreegames = false;
@@ -176,7 +176,7 @@ function spinReels() {
     }
 
     if (introSuperspins) {
-        document.getElementById('popup-description').style.display = 'flex';
+        document.getElementById('popup-description-ss').style.display = 'flex';
         document.getElementById('superspin-win').style.display = 'none';
         toggleSuperspinsPopup(true); // show the element
         introSuperspins = false;
@@ -295,6 +295,16 @@ function spinReels() {
         reels.forEach((reel, i) => {
             setTimeout(() => {
                 animateReel(reel, i, () => {
+                    if (!freegames && !powerspins && !superspins) {
+                        results[i].forEach((symbol) => {
+                            if (symbol == 'Eye') {
+                                playBeep();
+                            }
+                            if (symbol == 'Zeus') {
+                                playClick();
+                            }
+                        });
+                    }
                     completedReels++;
                     if (completedReels === reels.length) {
                         isSpinning = false; // Spin abgeschlossen
@@ -310,17 +320,17 @@ function spinReels() {
                             checkForFreegames();
                         }
                         if (powerspinCount == powerspinsTotal) {
-                            document.getElementById('popup-description').style.display = 'none';
+                            document.getElementById('popup-description-ps').style.display = 'none';
                             document.getElementById('powerspin-win').style.display = 'block';
                             togglePowerspinsPopup(true);    //show the element
                         }
                         if (freegamesCount == freegamesTotal) {
-                            document.getElementById('popup-description').style.display = 'none';
+                            document.getElementById('popup-description-fg').style.display = 'none';
                             document.getElementById('freegames-win').style.display = 'block';
                             toggleFreegamesPopup(true);    //show the element
                         }
                         if (superspinCount == superspinsTotal) {
-                            document.getElementById('popup-description-img').style.display = 'none';
+                            document.getElementById('popup-description-ss').style.display = 'none';
                             document.getElementById('superspin-win').style.display = 'block';
                             toggleSuperspinsPopup(true);    //show the element
                         }
@@ -338,7 +348,7 @@ function spinReels() {
                 });
             }, i * reelDelay); // Verzögerung von 250ms zwischen den Walzen
         });
-    }, 200);
+    }, 250);
 }
 
 function removeHighlightFromSymbols() {
@@ -808,17 +818,17 @@ function changeHead(event) {
         logo.style.display = 'none';
         logoSmall.style.display = 'none';
         let psHead = document.getElementById('alt-head-ps');
-        psHead.innerHTML = "POWERSPIN " + `${powerspinCount} ` + "von " + `${powerspinsTotal}`;
+        psHead.innerHTML = "POWERSPIN " + `${powerspinCount} ` + "of " + `${powerspinsTotal}`;
         psHead.style.display = 'block';
     } else if (event == 'freegames') {
         logo.style.display = 'none';
         logoSmall.style.display = 'none';
-        fgHead.innerHTML = "FREEGAME " + `${freegamesCount} ` + "von " + `${freegamesTotal}`
+        fgHead.innerHTML = "FREEGAME " + `${freegamesCount} ` + "of " + `${freegamesTotal}`
         fgHead.style.display = 'block'
     } else if (event == 'superspins') {
         logo.style.display = 'none';
         logoSmall.style.display = 'none';
-        ssHead.innerHTML = "SUPERSPIN " + `${superspinCount} ` + "von " + `${superspinsTotal}`
+        ssHead.innerHTML = "SUPERSPIN " + `${superspinCount} ` + "of " + `${superspinsTotal}`
         ssHead.style.display = 'block'
     } else if (event == 'default') {
         psHead.style.display = 'none';
@@ -839,7 +849,7 @@ function updateHead(event) {
             psHead.innerHTML = "POWERSPIN " + `${powerspinCount} ` + "/ " + `${powerspinsTotal}`;
 
         } else {
-            psHead.innerHTML = "POWERSPIN " + `${powerspinCount} ` + "von " + `${powerspinsTotal}`;
+            psHead.innerHTML = "POWERSPIN " + `${powerspinCount} ` + "of " + `${powerspinsTotal}`;
         }
 
     } else if (event == 'freegames') {
@@ -849,7 +859,7 @@ function updateHead(event) {
             fgHead.innerHTML = "FREEGAME " + `${freegamesCount} ` + "/ " + `${freegamesTotal}`;
 
         } else {
-            fgHead.innerHTML = "FREEGAME " + `${freegamesCount} ` + "von " + `${freegamesTotal}`;
+            fgHead.innerHTML = "FREEGAME " + `${freegamesCount} ` + "of " + `${freegamesTotal}`;
         }    
     } else if (event == 'superspins') {
         let ssHead = document.getElementById('alt-head-ss');
@@ -858,7 +868,7 @@ function updateHead(event) {
             ssHead.innerHTML = "SUPERSPINS " + `${superspinCount} ` + "/ " + `${superspinsTotal}`;
 
         } else {
-            ssHead.innerHTML = "SUPERSPINS " + `${superspinCount} ` + "von " + `${superspinsTotal}`;
+            ssHead.innerHTML = "SUPERSPINS " + `${superspinCount} ` + "of " + `${superspinsTotal}`;
         }    
     }
 }
@@ -869,6 +879,16 @@ function returnWild () {
     } else {
         return 'Eye';
     }
+}
+
+function playBeep() {
+    let sound = new Audio("./assets/beep.mp3"); // Erstelle neue Audio-Instanzen
+    sound.play();
+}
+
+function playClick() {
+    let sound = new Audio("./assets/click.mp3"); // Erstelle neue Audio-Instanzen
+    sound.play();
 }
 
 // Initial setup
