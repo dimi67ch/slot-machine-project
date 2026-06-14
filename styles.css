@@ -1,49 +1,203 @@
+/* ============================================================
+   1. CSS CUSTOM PROPERTIES
+   ============================================================ */
+:root {
+    --clr-bg:           #0a0a0f;
+    --clr-accent-blue:  #1a8cff;
+    --clr-accent-gold:  #f0c040;
+    --clr-text:         #ffffff;
+    --clr-text-dim:     rgba(255,255,255,0.65);
+
+    --glass-bg:         rgba(255,255,255,0.07);
+    --glass-bg-heavy:   rgba(10,10,20,0.75);
+    --glass-border:     rgba(255,255,255,0.13);
+    --glass-blur:       16px;
+    --glass-shadow:     0 4px 32px rgba(0,0,0,0.55),
+                        0 0 0 1px rgba(255,255,255,0.05);
+
+    --glow-blue:        0 0 18px rgba(26,140,255,0.45);
+    --glow-gold:        0 0 24px rgba(240,192,64,0.55);
+
+    --reel-w:           10vw;
+    --reel-h:           30vw;
+    --symbol-h:         10vw;
+
+    --transition-fast:  0.18s ease;
+    --transition-med:   0.35s ease;
+
+    --layout-gap:       clamp(12px, 2vw, 24px);
+    --panel-pad:        clamp(10px, 1.6vw, 18px);
+    --machine-width:    min(100%, calc(var(--reel-w) * 5 + var(--layout-gap) * 2));
+    --header-width:     min(100%, 56vw);
+    --controls-width:   min(100%, 56vw);
+}
+
+/* ============================================================
+   2. FONT FACE
+   ============================================================ */
 @font-face {
     font-family: 'fasolada';
-    src: url('gelio/Gelio\ Fasolada.ttf') format('woff'),
-         url('gelio/Gelio\ Fasolada.ttf') format('woff2');
+    src: url('gelio/Gelio Fasolada.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
-body {
-    height: 100vh;
-    width: 100vw;
-    display: grid;
-    grid-template-columns: 25vw 50vw 25vw;
-    grid-template-rows: calc((100vh - 35vw)*0.6) 35vw calc((100vh - 35vw)*0.4);
-    align-content: center;
-    justify-content: center;
-    height: 100vh;
-    background-color: #000;
-    color: #fff;
-    font-family: Arial, sans-serif;
+/* ============================================================
+   3. RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+    box-sizing: border-box;
     margin: 0;
-    background-image: url(./assets/cover.gif);
-    background-size: cover;
+    padding: 0;
 }
 
+body {
+    min-height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: minmax(20px, 1fr) minmax(0, 64vw) minmax(20px, 1fr);
+    grid-template-rows: auto auto auto;
+    gap: var(--layout-gap) 0;
+    align-content: center;
+    justify-items: center;
+    padding: clamp(16px, 3vw, 32px) 0;
+    background-color: var(--clr-bg);
+    color: var(--clr-text);
+    font-family: Arial, sans-serif;
+}
+
+/* ============================================================
+   4. BACKGROUND SMOKE LAYER
+   ============================================================ */
+#bg-smoke {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 80% 60% at 20% 80%, rgba(30,20,60,0.75) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 50% at 80% 20%, rgba(10,30,60,0.65) 0%, transparent 65%),
+        radial-gradient(ellipse 100% 80% at 50% 110%, rgba(15,10,35,0.85) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(20,10,50,0.4) 0%, transparent 70%);
+    animation: smokeShift 18s ease-in-out infinite alternate;
+}
+
+/* ============================================================
+   5. GLASSMORPHISM UTILITIES
+   ============================================================ */
+.glass-panel {
+    position: relative;
+    z-index: 1;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 12px;
+}
+
+.glass-panel--reels {
+    background: rgba(0,0,0,0.4);
+    border-color: rgba(255,255,255,0.18);
+    box-shadow: var(--glass-shadow), var(--glow-blue);
+}
+
+.glass-modal {
+    background: var(--glass-bg-heavy);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow), 0 0 48px rgba(0,0,0,0.8);
+    border-radius: 16px;
+}
+
+.glass-btn {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--clr-text);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition:
+        background var(--transition-fast),
+        box-shadow var(--transition-fast),
+        border-color var(--transition-fast);
+    letter-spacing: 0.05em;
+}
+
+.glass-btn:hover:not(:disabled) {
+    background: rgba(255,255,255,0.14);
+    box-shadow: var(--glow-blue);
+    border-color: rgba(255,255,255,0.25);
+}
+
+.glass-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.glass-btn--primary {
+    border-color: var(--clr-accent-blue);
+    box-shadow: var(--glow-blue);
+    color: var(--clr-accent-blue);
+}
+
+.glass-btn--primary:hover:not(:disabled) {
+    background: rgba(26,140,255,0.18);
+    box-shadow: 0 0 28px rgba(26,140,255,0.7);
+    color: #fff;
+}
+
+.glass-btn--danger {
+    border-color: rgba(220,50,50,0.6);
+    color: #ff6060;
+}
+
+.glass-btn--danger:hover:not(:disabled) {
+    background: rgba(180,0,0,0.25);
+    box-shadow: 0 0 18px rgba(200,0,0,0.5);
+}
+
+.glass-select {
+    background: transparent;
+    border: none;
+    color: var(--clr-text);
+    font-size: 18px;
+    width: 100%;
+    height: 100%;
+    text-align: right;
+    text-align-last: right;
+    -moz-text-align-last: right;
+    cursor: pointer;
+    outline: none;
+    padding-right: 6px;
+    direction: rtl;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.glass-select option {
+    background: #1a1a2e;
+    color: var(--clr-text);
+}
+
+/* ============================================================
+   6. LAYOUT
+   ============================================================ */
 #header {
     grid-column: 2;
     grid-row: 1;
     display: flex;
     justify-content: center;
-    align-self: self-end;
-}
-
-#logo {
-    width: 100%;
-}
-
-#logo-small {
-    display: none;
-}
-
-.alt-head {
-    font-family: 'fasolada';
-    display: none;
-    font-size: 5em;
-    color: dodgerblue;
+    align-items: center;
+    width: var(--header-width);
+    min-height: clamp(76px, 10vw, 124px);
+    padding: var(--panel-pad) calc(var(--panel-pad) * 1.4);
 }
 
 #slot-machine {
@@ -52,147 +206,226 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    width: var(--machine-width);
+    gap: clamp(4px, 0.7vw, 10px);
+    padding: var(--panel-pad);
 }
 
 #buttons {
-    align-self: start;
     grid-column: 2;
     grid-row: 3;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: 10px;
+    width: var(--controls-width);
+    flex-wrap: wrap;
+    gap: clamp(8px, 1vw, 14px);
+    padding: var(--panel-pad);
 }
 
-#buttons > * {
-    height: 5vh;
-    width: 10vw;
-    font-size: 20px;
-    border-radius: 7px;
-    display: flex;
-    align-items: center;
+/* ============================================================
+   7. HEADER
+   ============================================================ */
+#logo {
+    width: 100%;
+    max-height: clamp(46px, 6vw, 72px);
+    object-fit: contain;
 }
 
-#bank-font, #win-font, #bet-font {
-    display: flex;
-    justify-content: flex-end;
+#logo-small {
+    display: none;
+    height: clamp(42px, 6vw, 68px);
 }
 
-#bank, #win, #bet {
-    position: relative;
-    background-color: darkgrey;
-    border: 2px blue solid;
-    text-align: end;
-    justify-content: flex-end;
-    padding-right: 10px;
-    padding-left: 10px;
+.alt-head {
+    font-family: 'fasolada', Arial, sans-serif;
+    display: none;
+    font-size: clamp(1.1rem, 2.8vw, 3rem);
+    color: var(--clr-accent-blue);
+    text-shadow: var(--glow-blue), 0 0 40px rgba(26,140,255,0.3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
-#guide {
-    opacity: 0;
-    justify-self: center;
-    position: fixed;
-    z-index: -1000;
-    transition: opacity 0.5s;
-}
-
-#guide-img {
-    top: 0;
-    height: 100vh;
-}
-
-#guide-button {
-    background-color: rgb(151, 151, 10);
-    border: 2px white solid;
-}
-
-#close-guide {
-    background-color: rgba(145, 0, 0, 0.7);
-    z-index: 3000;
-    font-size: xx-large;
-    border: none;
-    color: white;
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 10vh;
-    width: 10vh;
-}
-
-#close-guide:hover {
-    background-color: rgb(145, 0, 0);
-    cursor: pointer;
-}
-
-#spin-button, #guide-button {
-    width: calc(10vw + 10px);
-    cursor: pointer;
-    justify-content: center;
-}
-
-#spin-button {
-    background-color: green;
-    border: 2px greenyellow solid;   
-}
-
+/* ============================================================
+   8. SLOT MACHINE & REELS
+   ============================================================ */
 .reel {
-    width: 10vw;
-    height: 30vw;
-    border: 1px solid #fff;
+    width: var(--reel-w);
+    height: var(--reel-h);
+    box-sizing: content-box;
     overflow: hidden;
     position: relative;
 }
 
+.reel-glass {
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    box-shadow:
+        inset 0 0 20px rgba(0,0,0,0.6),
+        0 0 10px rgba(26,140,255,0.12);
+}
+
 .symbol {
     width: 100%;
-    height: 10vw;
+    height: var(--symbol-h);
     position: absolute;
+    will-change: transform;
 }
 
-.eye-overlay {
-    z-index: 999; 
-    transition: transform 1s ease;
-}
-
-
-#select-bet {
-    position: absolute;
-    height: 100%;
+.symbol img {
     width: 100%;
-    right: 0;
-    text-align: end;
-    font-size: 20px;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
-@keyframes blink {
-    0% { border-color: red; }
-    50% { border-color: rgba(255, 0, 0, 0.2); }
-    100% { border-color: red; }
-}
-
+/* ============================================================
+   9. WIN ANIMATION (Gold Glow)
+   ============================================================ */
 .win-symbol {
-    border: 5px solid red;
-    box-sizing: border-box; /* Damit der Rand innerhalb des Bildes bleibt */
-    animation: blink 1s infinite; /* Animation hinzufügen */
+    outline: 2px solid var(--clr-accent-gold);
+    outline-offset: -2px;
+    border-radius: 6px;
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.15),
+        0 0 14px rgba(240,192,64,0.35);
+    animation: winGlow 0.9s ease-in-out infinite;
 }
 
-#powerspins-popup, #freegames-popup, #superspins-popup {
-    opacity: 0; /* Initialzustand: Ausgeblendet */
+/* ============================================================
+   10. EYE OVERLAY (Sticky Wild)
+   ============================================================ */
+.eye-overlay {
+    z-index: 999;
+    pointer-events: none;
     position: fixed;
-    top: 20%; 
+    object-fit: cover;
+    will-change: top, left, transform, opacity;
+    filter: drop-shadow(0 0 10px rgba(26,140,255,0.45));
+    transform-origin: center center;
+    backface-visibility: hidden;
+}
+
+/* ============================================================
+   11. BUTTONS BAR
+   ============================================================ */
+#buttons > .glass-btn {
+    height: clamp(36px, 5vh, 64px);
+    width: clamp(72px, 10vw, 130px);
+    min-width: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(13px, 1.4vw, 20px);
+}
+
+#guide-button {
+    border-color: rgba(200,200,50,0.5);
+    color: #d4d430;
+}
+
+#guide-button:hover:not(:disabled) {
+    background: rgba(180,180,0,0.15);
+    box-shadow: 0 0 18px rgba(200,200,0,0.4);
+}
+
+#spin-button {
+    width: clamp(80px, calc(10vw + 10px), 140px);
+}
+
+.stat-group {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    height: clamp(44px, 6vh, 72px);
+    width: clamp(72px, 10vw, 130px);
+    min-width: 72px;
+    gap: 2px;
+}
+
+.stat-label {
+    font-size: clamp(9px, 0.8vw, 11px);
+    color: var(--clr-text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: right;
+    padding-right: 2px;
+    flex-shrink: 0;
+}
+
+.stat-value {
+    position: relative;
+    flex: 1;
+    min-height: 24px;
+    width: 100%;
+    background: rgba(0,0,0,0.45);
+    border: 1px solid rgba(26,140,255,0.3);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 6px;
+    font-size: clamp(13px, 1.4vw, 20px);
+    color: var(--clr-accent-blue);
+    font-weight: bold;
+    box-shadow: inset 0 0 12px rgba(0,0,0,0.4);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#win {
+    color: var(--clr-accent-gold);
+    border-color: rgba(240,192,64,0.3);
+}
+
+#bet {
+    padding: 0;
+}
+
+/* ============================================================
+   12. POPUPS / MODALS
+   ============================================================ */
+#powerspins-popup,
+#freegames-popup,
+#superspins-popup {
+    opacity: 0;
+    position: fixed;
+    top: 20%;
     left: 25%;
     width: 50vw;
-    height: calc(50vw/1.78);
-    background-image: url("./assets/popup.svg");
-    background-size: contain;
+    height: calc(50vw / 1.78);
     z-index: 1000;
-    transition: opacity 0.5s;
-
+    transition: opacity var(--transition-med);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 12px;
+}
+
+#powerspins-popup h2,
+#freegames-popup h2,
+#superspins-popup h2 {
+    font-family: 'fasolada', Arial, sans-serif;
+    font-size: 3em;
+    color: var(--clr-accent-gold);
+    text-shadow: var(--glow-gold);
+    letter-spacing: 0.08em;
+}
+
+#powerspin-win,
+#freegames-win,
+#superspin-win {
+    font-size: 2em;
+    font-weight: bold;
+    color: var(--clr-accent-gold);
+    text-shadow: var(--glow-gold);
 }
 
 .popup-description {
@@ -200,6 +433,9 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 8px;
+    color: var(--clr-text-dim);
+    font-size: 1.1em;
 }
 
 .popup-description-img {
@@ -208,22 +444,77 @@ body {
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    gap: 8px;
 }
 
 .popup-description img {
     width: 5vw;
     height: 5vw;
+    object-fit: contain;
+    border-radius: 6px;
+    border: 1px solid var(--glass-border);
 }
 
-@media only screen and (max-width: 930px) and (orientation: landscape) {
-    
+/* ============================================================
+   13. GUIDE OVERLAY
+   ============================================================ */
+#guide {
+    opacity: 0;
+    position: fixed;
+    inset: 0;
+    z-index: -1000;
+    transition: opacity var(--transition-med);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.7);
+    border-radius: 0;
+    border: none;
+}
+
+#guide-img {
+    height: 92vh;
+    max-width: 90vw;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+#close-guide {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 3000;
+    width: 48px;
+    height: 48px;
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ============================================================
+   14. RESPONSIVE (mobile ≤ 930px)
+   ============================================================ */
+@media only screen and (max-width: 930px) {
+    :root {
+        --header-width: 100%;
+        --controls-width: 100%;
+    }
+
     body {
-        margin: 0;
-        height: 100vh;
-        width: 100vw;
-        
-        grid-template-columns: 75% 25%;
-        grid-template-rows: 33% 33% 33%;
+        min-height: 100svh;
+        width: 100%;
+        overflow-x: hidden;
+        overflow-y: hidden;
+        align-content: stretch;
+        justify-items: stretch;
+        padding: 10px;
+    }
+
+    #header,
+    #slot-machine,
+    #buttons {
+        width: 100%;
     }
 
     #logo {
@@ -232,85 +523,217 @@ body {
 
     #logo-small {
         display: block;
+        height: clamp(40px, 7vw, 58px);
+    }
+
+    .alt-head {
+        align-self: center;
+    }
+
+    #powerspins-popup,
+    #freegames-popup,
+    #superspins-popup {
+        top: 10%;
+        left: 5%;
+        width: 90vw;
+        height: auto;
+        min-height: 38vh;
+        padding: 20px 16px;
+    }
+
+    .popup-description img {
+        width: 12vw;
+        height: 12vw;
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+
+@media only screen and (max-width: 930px) and (orientation: portrait) {
+    :root {
+        --reel-w: 17.2vw;
+        --reel-h: 51.6vw;
+        --symbol-h: 17.2vw;
+        --layout-gap: 8px;
+        --panel-pad: 8px;
+        --machine-width: 100%;
+    }
+
+    body {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(60px, 11svh) minmax(0, 1fr) minmax(136px, 24svh);
+        gap: 8px;
+        height: 100svh;
+    }
+
+    #header {
+        grid-column: 1;
+        grid-row: 1;
+        min-height: 0;
+        padding: 8px 10px;
+    }
+
+    #slot-machine {
+        grid-column: 1;
+        grid-row: 2;
+        gap: 4px;
+        padding: 8px 4px;
+        align-self: center;
+        max-height: 100%;
+    }
+
+    #buttons {
+        grid-column: 1;
+        grid-row: 3;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        padding: 8px;
+        align-content: stretch;
+    }
+
+    #buttons > .glass-btn,
+    .stat-group {
+        width: 100%;
+        min-width: 0;
+        height: 100%;
+    }
+
+    #spin-button {
+        grid-column: 1 / -1;
+        min-height: 46px;
+    }
+
+    #guide-button {
+        min-height: 44px;
+    }
+
+    .stat-group {
+        min-height: 52px;
+    }
+
+    .stat-value {
+        font-size: clamp(13px, 3.6vw, 17px);
+    }
+
+    .stat-label {
+        font-size: clamp(8px, 2.2vw, 10px);
+    }
+
+    #buttons > .glass-btn {
+        font-size: clamp(12px, 3.2vw, 16px);
+    }
+}
+
+@media only screen and (max-width: 930px) and (orientation: landscape) {
+    :root {
+        --reel-w:    13.2vw;
+        --reel-h:    39.6vw;
+        --symbol-h:  13.2vw;
+        --layout-gap: 8px;
+        --panel-pad: 6px;
+    }
+
+    body {
+        grid-template-columns: minmax(0, 1fr) minmax(142px, 24vw);
+        grid-template-rows: minmax(54px, 16svh) minmax(0, 1fr);
+        height: 100svh;
+        align-content: stretch;
+        justify-items: stretch;
+        gap: 8px;
+        padding: 8px;
+    }
+
+    #logo-small {
         height: 100%;
     }
 
     .alt-head {
-        font-size: 3em;
+        font-size: clamp(1.1rem, 3vw, 1.8rem);
         align-self: center;
-        padding-left: 10%;
-    }
-      
-    #slot-machine {
-        grid-column: 1;
-        grid-row: 1 / span 3;
     }
 
-    #header{
+    #header {
         grid-column: 2;
         grid-row: 1;
         width: 100%;
-        height: 100%;
+        align-items: center;
+        justify-content: center;
+        min-height: 0;
+        padding: 8px;
+    }
+
+    #slot-machine {
+        grid-column: 1;
+        grid-row: 1 / span 2;
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        place-items: center;
+        align-self: center;
+        gap: 2px;
+        padding: 6px;
+        max-height: 100%;
+        overflow: hidden;
+    }
+
+    #slot-machine .reel {
+        width: 100%;
+        max-width: var(--reel-w);
     }
 
     #buttons {
         grid-column: 2;
-        grid-row: 2 / span 3;
-        display: grid;
-        grid-template-columns: 33% 66%;
-        grid-template-rows: 17.5% 17.5% 17.5% 17.5% auto;
-        padding-right: 10%;
-    }
-
-    #guide-button {
-        display: flex;
-        justify-content: center;
-        align-content: center;
-        width: 90%;
-        height: 90%;
-        justify-self: end;
-        grid-column: 1 / span 2;
-        grid-row: 1;
-    }
-
-    #bank, #bet, #win {
-        width: 50%;
-        height: 10vh;
-        grid-column: 2;
-        justify-self: end;
-    }
-
-    #bank-font, #win-font, #bet-font {
-        grid-column: 1;
-    }
-
-    #bank, #bank-font {
         grid-row: 2;
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        padding: 8px;
     }
 
-    #win, #win-font {
-        grid-row: 3;
-    }
-
-    #bet, #bet-font {
-        grid-row: 4;
+    #buttons > .glass-btn {
+        width: 100%;
+        height: 8.2vh;
+        min-height: 38px;
+        font-size: clamp(11px, 2vw, 14px);
     }
 
     #spin-button {
-        justify-self: end;
-        width: 90%;
-        height: 10vh;
-        grid-column: 1 / span 2;
-        grid-row: 5;
+        width: 100%;
     }
 
-    .reel {
-        height: 45vw;
-        width: 15vw;
+    .stat-group {
+        width: 100%;
+        height: 8.2vh;
+        min-height: 42px;
     }
 
-    .symbol {
-        width: 15vw;
-        height: 15vw;
+    .stat-value {
+        font-size: clamp(12px, 2vw, 14px);
+    }
+
+    .stat-label {
+        font-size: clamp(7px, 1.3vw, 9px);
+    }
+}
+
+/* ============================================================
+   15. KEYFRAME ANIMATIONS
+   ============================================================ */
+@keyframes smokeShift {
+    0%   { opacity: 0.75; }
+    50%  { opacity: 1;    }
+    100% { opacity: 0.8;  }
+}
+
+@keyframes winGlow {
+    0%, 100% {
+        box-shadow: 0 0 8px var(--clr-accent-gold);
+    }
+    50% {
+        box-shadow:
+            0 0 28px var(--clr-accent-gold),
+            0 0 48px rgba(240,192,64,0.4);
     }
 }

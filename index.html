@@ -5,85 +5,102 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Slot Machine</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
+    <script type="module" src="./js/main.js"></script>
     <link rel="icon" href="./assets/favicon.png" type="image/png">
 </head>
 <body>
-    <div id="guide">
+    <div id="bg-smoke"></div>
+
+    <!-- Guide overlay — direct body child so position:fixed works correctly -->
+    <div id="guide" class="glass-modal">
         <img id="guide-img" src="./assets/guide.png" alt="Guide">
-        <button id="close-guide">X</button>   
+        <button id="close-guide" class="glass-btn glass-btn--danger">X</button>
     </div>
-    <div id="header">
+
+    <!-- Bonus popups — direct body children so position:fixed is NOT broken
+         by backdrop-filter on parent glass panels (known CSS containing-block issue) -->
+    <div id="powerspins-popup" class="glass-modal">
+        <h2>POWERSPINS</h2>
+        <p id="powerspin-win"></p>
+        <div class="popup-description" id="popup-description-ps">
+            <div class="popup-description-img" id="popup-description-img-ps">
+                <img src="./assets/medusa.png" alt="Medusa">
+                <img src="./assets/achilles.png" alt="Achilles">
+                <img src="./assets/aristoteles.png" alt="Aristoteles">
+                <img src="./assets/alexander.png" alt="Alexander">
+                <img src="./assets/zeus.jpg" alt="Zeus">
+            </div>
+            <div>remain</div>
+        </div>
+    </div>
+
+    <div id="freegames-popup" class="glass-modal">
+        <h2>FREEGAMES</h2>
+        <p id="freegames-win"></p>
+        <div class="popup-description" id="popup-description-fg">
+            <img src="./assets/eye.png" alt="Eye">
+            <div>Sticky Wild</div>
+        </div>
+    </div>
+
+    <div id="superspins-popup" class="glass-modal">
+        <h2>SUPERSPINS</h2>
+        <p id="superspin-win"></p>
+        <div class="popup-description" id="popup-description-ss">
+            <div class="popup-description-img" id="popup-description-img-ss">
+                <img src="./assets/eye.png" alt="Eye">
+                <div>&#9866;</div>
+                <div> TURNS TO </div>
+                <div>&rightarrow;</div>
+                <img src="./assets/golden_eye.png" alt="Golden Eye">
+            </div>
+            <div>Sticky Wild &amp; Total Wins x2</div>
+        </div>
+    </div>
+
+    <div id="header" class="glass-panel">
         <img id="logo-small" src="./assets/logo-small.svg" alt="Logo">
         <img id="logo" src="./assets/Logo.svg" alt="Logo">
         <div id="alt-head-fg" class="alt-head">FREEGAME</div>
         <div id="alt-head-ps" class="alt-head">POWERSPIN</div>
         <div id="alt-head-ss" class="alt-head">SUPERSPIN</div>
-        <div id="powerspins-popup">
-            <h2>POWERSPINS</h2>
-            <p id="powerspin-win"></p>
-            <div class="popup-description" id="popup-description-ps">
-                <div class="popup-description-img" id="popup-description-img-ps">
-                    <img src="./assets/medusa.png" alt="Medusa">
-                    <img src="./assets/achilles.png" alt="Achilles">
-                    <img src="./assets/aristoteles.png" alt="Aristoteles">
-                    <img src="./assets/alexander.png" alt="Alexander">
-                    <img src="./assets/zeus.jpg" alt="Zeus">
-                </div>
-                <div>remain</div>
-            </div>
-        </div>
-        <div id="freegames-popup">
-            <h2>FREEGAMES</h2>
-            <p id="freegames-win"></p>
-            <div class="popup-description" id="popup-description-fg">
-                <img src="./assets/eye.png" alt="Eye">
-                <div>Sticky Wild</div>
-            </div>
-        </div>
-        <div id="superspins-popup">
-            <h2>SUPERSPINS</h2>
-            <p id="superspin-win"></p>
-            <div class="popup-description" id="popup-description-ss">
-                <div class="popup-description-img" id="popup-description-img-ss">
-                    <img src="./assets/eye.png" alt="Eye">
-                    <div>&#9866;</div>
-                    <div> TURNS TO </div>
-                    <div>&rightarrow;</div>
-                    <img src="./assets/golden_eye.png" alt="Golden Eye">
-                </div>
-                <div>Sticky Wild & Total Wins x2</div>
-            </div>
-        </div>
     </div>
-    <div id="slot-machine">
-        <div class="reel" id="reel1"></div>
-        <div class="reel" id="reel2"></div>
-        <div class="reel" id="reel3"></div>
-        <div class="reel" id="reel4"></div>
-        <div class="reel" id="reel5"></div>
+
+    <div id="slot-machine" class="glass-panel glass-panel--reels">
+        <div class="reel reel-glass" id="reel1"></div>
+        <div class="reel reel-glass" id="reel2"></div>
+        <div class="reel reel-glass" id="reel3"></div>
+        <div class="reel reel-glass" id="reel4"></div>
+        <div class="reel reel-glass" id="reel5"></div>
     </div>
-    <div id="buttons">
-        <button id="guide-button">GUIDE</button>
-        <div id="bank-font">BANK</div>
-        <div id="bank">1000</div>
-        <div id="win-font">WIN</div>
-        <div id="win">0</div>
-        <div id="bet-font">BET</div>
-        <div id="bet">
-            <select name="bet" id="select-bet">
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="30">30</option>
-                <option value="40">40</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-                <option value="150">150</option>
-                <option value="200">200</option>
-                <option value="400">400</option>
-            </select>
+
+    <div id="buttons" class="glass-panel">
+        <button id="guide-button" class="glass-btn">GUIDE</button>
+        <div class="stat-group">
+            <div class="stat-label">BANK</div>
+            <div id="bank" class="stat-value">1000</div>
         </div>
-        <button id="spin-button">START</button>
+        <div class="stat-group">
+            <div class="stat-label">WIN</div>
+            <div id="win" class="stat-value">0</div>
+        </div>
+        <div class="stat-group">
+            <div class="stat-label">BET</div>
+            <div id="bet" class="stat-value">
+                <select name="bet" id="select-bet" class="glass-select">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="150">150</option>
+                    <option value="200">200</option>
+                    <option value="400">400</option>
+                </select>
+            </div>
+        </div>
+        <button id="spin-button" class="glass-btn glass-btn--primary">START</button>
     </div>
 </body>
 </html>
