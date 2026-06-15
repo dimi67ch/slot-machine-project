@@ -1,6 +1,7 @@
-import { ROW_COUNT } from './constants.js';
-import { GS } from './state.js';
-import { getCellVw, getWildName, getSymbolPool, getRandomSymbol } from './utils.js';
+import { ROW_COUNT } from './constants.js?v=20260615-4';
+import { GS } from './state.js?v=20260615-4';
+import { setReelSpinState } from './rendering.js?v=20260615-4';
+import { getCellVw, getWildName, getSymbolPool, getRandomSymbol } from './utils.js?v=20260615-4';
 
 export function animateReel(reelEl, reelIndex, onComplete) {
     const cellVw   = getCellVw();
@@ -8,6 +9,8 @@ export function animateReel(reelEl, reelIndex, onComplete) {
     const totalVw  = numSyms * cellVw;
     const mode     = GS.activeMode;
     const pool     = getSymbolPool(mode);
+
+    setReelSpinState(reelEl, 'spinning');
 
     const ACCEL   = 150;
     const SPIN    = 380 + reelIndex * 90;  // cascade: each reel slightly longer
@@ -113,6 +116,7 @@ export function animateReel(reelEl, reelIndex, onComplete) {
 
     function finalize() {
         const wildName  = getWildName(mode);
+        setReelSpinState(reelEl, 'settling');
 
         // Sort by cyclePos: index 0 = buffer, 1-3 = rows 0-2
         const order = symEls
@@ -155,6 +159,7 @@ export function animateReel(reelEl, reelIndex, onComplete) {
             el.style.top        = `${row * cellVw}vw`;
         }
 
+        window.setTimeout(() => reelEl.classList.remove('is-settling'), 260);
         onComplete();
     }
 

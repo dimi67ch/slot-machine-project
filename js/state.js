@@ -1,4 +1,4 @@
-import { REEL_COUNT, ROW_COUNT } from './constants.js';
+import { REEL_COUNT, ROW_COUNT } from './constants.js?v=20260615-4';
 
 export const GS = {
     bank: 1000,

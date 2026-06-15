@@ -1,5 +1,5 @@
 import { SYMBOLS, POWERSPIN_SYMBOLS, FREEGAMES_SYMBOLS, SUPERSPIN_SYMBOLS,
-         LINES, SYMBOL_PAYOUTS, REEL_COUNT, ROW_COUNT } from './constants.js';
+         LINES, SYMBOL_PAYOUTS, REEL_COUNT, ROW_COUNT } from './constants.js?v=20260615-4';
 
 export function isCompactScreen() {
     return window.matchMedia('(max-width: 930px)').matches;

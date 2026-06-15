@@ -195,6 +195,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
     width: var(--header-width);
     min-height: clamp(76px, 10vw, 124px);
     padding: var(--panel-pad) calc(var(--panel-pad) * 1.4);
@@ -250,6 +251,92 @@ body {
     max-width: 100%;
 }
 
+.mode-panel {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    transform: translate(-50%, -50%);
+    display: grid;
+    gap: 2px;
+    justify-items: center;
+    min-width: min(100%, 320px);
+    max-width: calc(100% - 24px);
+    padding: 10px 16px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(9,14,27,0.78), rgba(9,14,27,0.56));
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.mode-panel.is-visible {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+}
+
+.mode-panel[data-mode="blue"] {
+    border-color: rgba(26,140,255,0.25);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 0 24px rgba(26,140,255,0.15);
+}
+
+.mode-panel[data-mode="gold"] {
+    border-color: rgba(240,192,64,0.24);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 0 24px rgba(240,192,64,0.12);
+}
+
+.mode-panel-title {
+    font-family: 'fasolada', Arial, sans-serif;
+    letter-spacing: 0.06em;
+    font-size: clamp(1rem, 1.9vw, 1.6rem);
+    color: var(--clr-text);
+}
+
+.mode-panel-progress {
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    font-weight: 700;
+    color: var(--clr-accent-gold);
+}
+
+.mode-panel-detail {
+    font-size: clamp(0.78rem, 1.05vw, 0.95rem);
+    color: var(--clr-text-dim);
+    white-space: nowrap;
+}
+
+.spin-award-pop {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    z-index: 1400;
+    transform: translate(-50%, -50%) scale(0.8);
+    padding: 0.35em 0.7em;
+    border-radius: 999px;
+    background: rgba(240,192,64,0.2);
+    border: 1px solid rgba(240,192,64,0.45);
+    color: var(--clr-accent-gold);
+    font-family: 'fasolada', Arial, sans-serif;
+    font-size: clamp(1.1rem, 2.6vw, 2.3rem);
+    text-shadow: var(--glow-gold);
+    box-shadow: 0 0 28px rgba(240,192,64,0.34);
+    pointer-events: none;
+    white-space: nowrap;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.spin-award-pop[data-mode="blue"] {
+    background: rgba(26,140,255,0.16);
+    border-color: rgba(26,140,255,0.4);
+    color: var(--clr-accent-blue);
+    text-shadow: var(--glow-blue);
+    box-shadow: 0 0 18px rgba(26,140,255,0.24);
+}
+
+.spin-award-pop.is-active {
+    animation: spinAwardPop 1s cubic-bezier(0.18, 0.9, 0.32, 1) forwards;
+}
+
 /* ============================================================
    8. SLOT MACHINE & REELS
    ============================================================ */
@@ -265,9 +352,29 @@ body {
     background: rgba(0,0,0,0.55);
     border: 1px solid rgba(255,255,255,0.15);
     border-radius: 8px;
+    transition: border-color 180ms ease, box-shadow 180ms ease, filter 180ms ease;
     box-shadow:
         inset 0 0 20px rgba(0,0,0,0.6),
         0 0 10px rgba(26,140,255,0.12);
+}
+
+.reel.is-spinning {
+    border-color: rgba(26,140,255,0.34);
+    box-shadow:
+        inset 0 0 24px rgba(0,0,0,0.72),
+        0 0 18px rgba(26,140,255,0.2);
+    filter: saturate(1.06);
+}
+
+.reel.is-settling {
+    animation: reelStopPulse 0.26s ease-out;
+}
+
+.reel.has-win {
+    border-color: rgba(240,192,64,0.48);
+    box-shadow:
+        inset 0 0 24px rgba(0,0,0,0.68),
+        0 0 18px rgba(240,192,64,0.25);
 }
 
 .symbol {
@@ -391,17 +498,13 @@ body {
 /* ============================================================
    12. POPUPS / MODALS
    ============================================================ */
-#powerspins-popup,
-#freegames-popup,
-#superspins-popup {
-    opacity: 0;
+.bonus-popup {
     position: fixed;
     top: 20%;
     left: 25%;
     width: 50vw;
     height: calc(50vw / 1.78);
     z-index: 1000;
-    transition: opacity var(--transition-med);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -409,9 +512,7 @@ body {
     gap: 12px;
 }
 
-#powerspins-popup h2,
-#freegames-popup h2,
-#superspins-popup h2 {
+.bonus-popup h2 {
     font-family: 'fasolada', Arial, sans-serif;
     font-size: 3em;
     color: var(--clr-accent-gold);
@@ -419,9 +520,7 @@ body {
     letter-spacing: 0.08em;
 }
 
-#powerspin-win,
-#freegames-win,
-#superspin-win {
+.bonus-popup-win {
     font-size: 2em;
     font-weight: bold;
     color: var(--clr-accent-gold);
@@ -467,16 +566,196 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0,0,0,0.7);
+    padding: 28px;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse 70% 60% at 85% 15%, rgba(0,140,255,0.28), transparent 70%),
+        radial-gradient(ellipse 55% 45% at 78% 78%, rgba(0,140,255,0.2), transparent 72%),
+        rgba(0,0,0,0.82);
     border-radius: 0;
     border: none;
 }
 
-#guide-img {
-    height: 92vh;
-    max-width: 90vw;
+#guide-viewport {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+}
+
+#guide-scale-frame {
+    display: grid;
+    place-items: start;
+    overflow: hidden;
+}
+
+#guide-sheet {
+    width: 1480px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.12fr) minmax(280px, 0.6fr) minmax(0, 1.55fr);
+    grid-template-areas:
+        "medusa zeus heroes-top"
+        "jq zeus heroes-bottom"
+        "ka wild bonus";
+    gap: 22px 28px;
+    padding: 20px 84px 20px 20px;
+    transform-origin: top left;
+}
+
+.guide-card {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 14px 18px;
+    background: rgba(0,0,0,0.88);
+    border: 4px solid rgba(255,255,255,0.92);
+    box-shadow: 0 0 28px rgba(0,0,0,0.35);
+}
+
+.guide-card--payout,
+.guide-card--wide {
+    justify-content: space-between;
+}
+
+.guide-card--tall {
+    grid-area: zeus;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.guide-card--bonus {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+.guide-card:nth-child(1) { grid-area: medusa; }
+.guide-card:nth-child(2) { grid-area: jq; }
+.guide-card:nth-child(3) { grid-area: ka; }
+.guide-card:nth-child(5) { grid-area: heroes-top; }
+.guide-card:nth-child(6) { grid-area: heroes-bottom; }
+.guide-card:nth-child(7) { grid-area: wild; }
+.guide-card:nth-child(8) { grid-area: bonus; }
+
+.guide-card-media {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+}
+
+.guide-card-media img {
+    display: block;
     object-fit: contain;
-    border-radius: 8px;
+}
+
+.guide-card-media--single img {
+    width: clamp(150px, 13vw, 250px);
+    height: clamp(150px, 13vw, 250px);
+}
+
+.guide-card-media--letters img {
+    width: clamp(96px, 8vw, 146px);
+    height: clamp(96px, 8vw, 146px);
+    filter: drop-shadow(0 0 10px rgba(26,140,255,0.34));
+}
+
+.guide-card-media--duo {
+    gap: 0;
+}
+
+.guide-card-media--duo img {
+    width: clamp(180px, 12vw, 260px);
+    height: clamp(150px, 10vw, 220px);
+}
+
+.guide-card--tall .guide-card-media--single img {
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+    aspect-ratio: 1 / 1;
+}
+
+.guide-card-copy {
+    display: grid;
+    gap: 10px;
+    font-family: 'fasolada', Arial, sans-serif;
+    font-size: clamp(1.2rem, 2vw, 2.1rem);
+    line-height: 1.12;
+    text-transform: uppercase;
+    color: #f8f8f8;
+}
+
+.guide-card-copy > div > span:first-child,
+.guide-bonus-copy,
+.guide-bonus-row span {
+    color: #ffd84a;
+}
+
+.guide-card-copy .guide-payout {
+    color: #f8f8f8;
+}
+
+.guide-bonus-symbol {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    font-family: 'fasolada', Arial, sans-serif;
+    font-size: clamp(2.2rem, 4vw, 4rem);
+    text-transform: uppercase;
+    color: #ffd84a;
+}
+
+.guide-bonus-symbol img {
+    width: clamp(130px, 14vw, 230px);
+    height: clamp(130px, 14vw, 230px);
+}
+
+.guide-bonus-copy {
+    font-family: 'fasolada', Arial, sans-serif;
+    font-size: clamp(1rem, 1.6vw, 1.7rem);
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.guide-card--bonus:first-of-type {
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 10px;
+}
+
+.guide-bonus-combo {
+    display: grid;
+    gap: 24px;
+    width: 100%;
+    align-content: center;
+}
+
+.guide-bonus-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-family: 'fasolada', Arial, sans-serif;
+    font-size: clamp(1.6rem, 2.8vw, 3.8rem);
+    text-transform: uppercase;
+    color: #ffd84a;
+}
+
+.guide-bonus-row img {
+    width: clamp(64px, 5.8vw, 104px);
+    height: clamp(64px, 5.8vw, 104px);
+    object-fit: contain;
+}
+
+.guide-bonus-row span:last-child {
+    margin-left: 8px;
 }
 
 #close-guide {
@@ -530,9 +809,16 @@ body {
         align-self: center;
     }
 
-    #powerspins-popup,
-    #freegames-popup,
-    #superspins-popup {
+    .mode-panel {
+        max-width: calc(100% - 16px);
+        padding: 8px 12px;
+    }
+
+    .mode-panel-detail {
+        font-size: clamp(0.72rem, 2vw, 0.88rem);
+    }
+
+    .bonus-popup {
         top: 10%;
         left: 5%;
         width: 90vw;
@@ -546,6 +832,22 @@ body {
         height: 12vw;
         min-width: 44px;
         min-height: 44px;
+    }
+
+    #guide {
+        padding: 16px;
+    }
+
+    .guide-card {
+        gap: 16px;
+    }
+
+    .guide-card-copy {
+        font-size: clamp(1rem, 5vw, 1.5rem);
+    }
+
+    .guide-bonus-row {
+        font-size: clamp(1.2rem, 5.5vw, 2rem);
     }
 }
 
@@ -653,6 +955,33 @@ body {
         align-self: center;
     }
 
+    .spin-award-pop {
+        font-size: clamp(0.95rem, 3.1vw, 1.35rem);
+        padding: 0.28em 0.56em;
+        max-width: calc(100% - 12px);
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .mode-panel {
+        min-width: 0;
+        width: calc(100% - 8px);
+        gap: 1px;
+        padding: 6px 8px;
+    }
+
+    .mode-panel-title {
+        font-size: clamp(0.92rem, 2.1vw, 1.1rem);
+    }
+
+    .mode-panel-progress {
+        font-size: clamp(0.85rem, 1.9vw, 1rem);
+    }
+
+    .mode-panel-detail {
+        font-size: clamp(0.62rem, 1.45vw, 0.72rem);
+    }
+
     #header {
         grid-column: 2;
         grid-row: 1;
@@ -735,5 +1064,66 @@ body {
         box-shadow:
             0 0 28px var(--clr-accent-gold),
             0 0 48px rgba(240,192,64,0.4);
+    }
+}
+
+@keyframes spinAwardPop {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.7);
+    }
+    15% {
+        opacity: 1;
+        transform: translate(-50%, calc(-50% - 10px)) scale(1.14);
+    }
+    55% {
+        opacity: 1;
+        transform: translate(-50%, calc(-50% - 18px)) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, calc(-50% - 34px)) scale(0.92);
+    }
+}
+
+@media only screen and (max-width: 930px) and (orientation: landscape) {
+    @keyframes spinAwardPop {
+        0% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.72);
+        }
+        15% {
+            opacity: 1;
+            transform: translate(-50%, calc(-50% - 8px)) scale(1.08);
+        }
+        55% {
+            opacity: 1;
+            transform: translate(-50%, calc(-50% - 14px)) scale(1);
+        }
+        100% {
+            opacity: 0;
+            transform: translate(-50%, calc(-50% - 22px)) scale(0.92);
+        }
+    }
+}
+
+@keyframes reelStopPulse {
+    0% {
+        border-color: rgba(26,140,255,0.34);
+        box-shadow:
+            inset 0 0 24px rgba(0,0,0,0.72),
+            0 0 18px rgba(26,140,255,0.2);
+    }
+    65% {
+        border-color: rgba(240,192,64,0.6);
+        box-shadow:
+            inset 0 0 28px rgba(0,0,0,0.74),
+            0 0 24px rgba(240,192,64,0.35);
+    }
+    100% {
+        border-color: rgba(255,255,255,0.15);
+        box-shadow:
+            inset 0 0 20px rgba(0,0,0,0.6),
+            0 0 10px rgba(26,140,255,0.12);
     }
 }

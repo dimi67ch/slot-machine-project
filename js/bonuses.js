@@ -1,23 +1,11 @@
-import { GS } from './state.js';
-import { countSymbol } from './utils.js';
-import { showPopup, changeHead } from './rendering.js';
+import { GS } from './state.js?v=20260615-4';
+import { countSymbol } from './utils.js?v=20260615-4';
+import { animateAddedSpins, showPopup, changeHead } from './rendering.js?v=20260615-4';
 
 export function handleIntro() {
     for (const mode of ['freegames', 'powerspins', 'superspins']) {
         if (GS[mode].intro) {
-            const descIds = {
-                freegames:  'popup-description-fg',
-                powerspins: 'popup-description-ps',
-                superspins: 'popup-description-ss',
-            };
-            const winIds = {
-                freegames:  'freegames-win',
-                powerspins: 'powerspin-win',
-                superspins: 'superspin-win',
-            };
-            document.getElementById(descIds[mode]).style.display = 'flex';
-            document.getElementById(winIds[mode]).style.display  = 'none';
-            showPopup(mode);
+            showPopup(mode, 'intro');
             GS[mode].intro = false;
             changeHead(mode);
             return true;
@@ -30,22 +18,7 @@ export function handleEndOfSpecialMode(mode) {
     if (mode === 'normal') return;
     const s = GS[mode];
     if (s.count < s.total) return;
-
-    const descIds = {
-        freegames:  'popup-description-fg',
-        powerspins: 'popup-description-ps',
-        superspins: 'popup-description-ss',
-    };
-    const winIds = {
-        freegames:  'freegames-win',
-        powerspins: 'powerspin-win',
-        superspins: 'superspin-win',
-    };
-
-    document.getElementById(descIds[mode]).style.display = 'none';
-    document.getElementById(winIds[mode]).style.display  = 'block';
-    document.getElementById(winIds[mode]).textContent    = s.totalWin;
-    showPopup(mode);
+    showPopup(mode, 'summary', s.totalWin);
 
     s.active   = false;
     s.count    = 0;
@@ -60,7 +33,10 @@ export function handleEndOfSpecialMode(mode) {
 export function checkForFreegames() {
     const n = countSymbol(GS.results, 'Eye');
     if (GS.freegames.active) {
-        if (n > 0) GS.freegames.total += n;
+        if (n > 0) {
+            GS.freegames.total += 1;
+            animateAddedSpins('freegames', 1);
+        }
     } else if (n >= 3) {
         GS.freegames.active = true;
         GS.freegames.intro  = true;
@@ -71,7 +47,10 @@ export function checkForFreegames() {
 export function checkForPowerspins() {
     const n = countSymbol(GS.results, 'Zeus');
     if (GS.powerspins.active) {
-        if (n >= 3) GS.powerspins.total += 3;
+        if (n >= 3) {
+            GS.powerspins.total += 3;
+            animateAddedSpins('powerspins', 3);
+        }
     } else if (n >= 3) {
         GS.powerspins.active = true;
         GS.powerspins.intro  = true;
@@ -84,7 +63,10 @@ export function checkForSuperspins() {
     const zeus = countSymbol(GS.results, 'Zeus');
     const gold = countSymbol(GS.results, 'GoldenEye');
     if (GS.superspins.active) {
-        if (gold > 0) GS.superspins.total += gold;
+        if (gold > 0) {
+            GS.superspins.total += gold;
+            animateAddedSpins('superspins', gold);
+        }
     } else if (eyes >= 3 && zeus >= 3) {
         GS.superspins.active = true;
         GS.superspins.intro  = true;

@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Slot Machine</title>
-    <link rel="stylesheet" href="styles.css">
-    <script type="module" src="./js/main.js"></script>
+    <link rel="stylesheet" href="styles.css?v=20260615-10">
+    <script type="module" src="./js/main.js?v=20260615-10"></script>
     <link rel="icon" href="./assets/favicon.png" type="image/png">
 </head>
 <body>
@@ -13,49 +13,116 @@
 
     <!-- Guide overlay — direct body child so position:fixed works correctly -->
     <div id="guide" class="glass-modal">
-        <img id="guide-img" src="./assets/guide.png" alt="Guide">
+        <div id="guide-viewport">
+            <div id="guide-scale-frame">
+                <div id="guide-sheet">
+                    <section class="guide-card guide-card--payout">
+                        <div class="guide-card-media guide-card-media--single">
+                            <img src="./assets/medusa.png" alt="Medusa">
+                        </div>
+                        <div class="guide-card-copy">
+                            <div><span>2x</span> = <span class="guide-payout" data-multiplier="1"></span></div>
+                            <div><span>3x</span> = <span class="guide-payout" data-multiplier="6"></span></div>
+                            <div><span>4x</span> = <span class="guide-payout" data-multiplier="100"></span></div>
+                            <div><span>5x</span> = <span class="guide-payout" data-multiplier="250"></span></div>
+                        </div>
+                    </section>
+
+                    <section class="guide-card guide-card--payout">
+                        <div class="guide-card-media guide-card-media--letters">
+                            <img src="./assets/J.svg" alt="J">
+                            <img src="./assets/Q.svg" alt="Q">
+                        </div>
+                        <div class="guide-card-copy">
+                            <div><span>3x</span> = <span class="guide-payout" data-multiplier="2"></span></div>
+                            <div><span>4x</span> = <span class="guide-payout" data-multiplier="5"></span></div>
+                            <div><span>5x</span> = <span class="guide-payout" data-multiplier="25"></span></div>
+                        </div>
+                    </section>
+
+                    <section class="guide-card guide-card--payout">
+                        <div class="guide-card-media guide-card-media--letters">
+                            <img src="./assets/K.svg" alt="K">
+                            <img src="./assets/A.svg" alt="A">
+                        </div>
+                        <div class="guide-card-copy">
+                            <div><span>3x</span> = <span class="guide-payout" data-multiplier="1"></span></div>
+                            <div><span>4x</span> = <span class="guide-payout" data-multiplier="4"></span></div>
+                            <div><span>5x</span> = <span class="guide-payout" data-multiplier="20"></span></div>
+                        </div>
+                    </section>
+
+                    <section class="guide-card guide-card--tall">
+                        <div class="guide-card-media guide-card-media--single">
+                            <img src="./assets/zeus.jpg" alt="Zeus">
+                        </div>
+                        <div class="guide-card-copy">
+                            <div><span>2x</span> = <span class="guide-payout" data-multiplier="3"></span></div>
+                            <div><span>3x</span> = <span class="guide-payout" data-multiplier="20"></span></div>
+                            <div><span>4x</span> = <span class="guide-payout" data-multiplier="500"></span></div>
+                            <div><span>5x</span> = <span class="guide-payout" data-multiplier="2000"></span></div>
+                        </div>
+                    </section>
+
+                    <section class="guide-card guide-card--wide">
+                        <div class="guide-card-copy">
+                            <div><span>2x</span> = <span class="guide-payout" data-multiplier="2"></span></div>
+                            <div><span>3x</span> = <span class="guide-payout" data-multiplier="15"></span></div>
+                            <div><span>4x</span> = <span class="guide-payout" data-multiplier="250"></span></div>
+                            <div><span>5x</span> = <span class="guide-payout" data-multiplier="1000"></span></div>
+                        </div>
+                        <div class="guide-card-media guide-card-media--duo">
+                            <img src="./assets/aristoteles.png" alt="Aristoteles">
+                            <img src="./assets/alexander.png" alt="Alexander">
+                        </div>
+                    </section>
+
+                    <section class="guide-card guide-card--wide">
+                        <div class="guide-card-copy">
+                            <div><span>2x</span> = <span class="guide-payout" data-multiplier="2"></span></div>
+                            <div><span>3x</span> = <span class="guide-payout" data-multiplier="10"></span></div>
+                            <div><span>4x</span> = <span class="guide-payout" data-multiplier="150"></span></div>
+                            <div><span>5x</span> = <span class="guide-payout" data-multiplier="500"></span></div>
+                        </div>
+                        <div class="guide-card-media guide-card-media--duo">
+                            <img src="./assets/archimedes.png" alt="Archimedes">
+                            <img src="./assets/achilles.png" alt="Achilles">
+                        </div>
+                    </section>
+
+                    <section class="guide-card guide-card--bonus">
+                        <div class="guide-bonus-symbol guide-bonus-symbol--wild">
+                            <img src="./assets/eye.png" alt="Eye">
+                            <div>Wild</div>
+                        </div>
+                    </section>
+
+                    <section class="guide-card guide-card--bonus">
+                        <div class="guide-bonus-combo">
+                            <div class="guide-bonus-row">
+                                <span>3x</span>
+                                <img src="./assets/eye.png" alt="Eye">
+                                <span>= Freegames</span>
+                            </div>
+                            <div class="guide-bonus-row">
+                                <span>3x</span>
+                                <img src="./assets/eye.png" alt="Eye">
+                                <span>+</span>
+                                <span>3x</span>
+                                <img src="./assets/zeus.jpg" alt="Zeus">
+                                <span>= Superspins</span>
+                            </div>
+                            <div class="guide-bonus-row">
+                                <span>3x</span>
+                                <img src="./assets/zeus.jpg" alt="Zeus">
+                                <span>= Powerspins</span>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
         <button id="close-guide" class="glass-btn glass-btn--danger">X</button>
-    </div>
-
-    <!-- Bonus popups — direct body children so position:fixed is NOT broken
-         by backdrop-filter on parent glass panels (known CSS containing-block issue) -->
-    <div id="powerspins-popup" class="glass-modal">
-        <h2>POWERSPINS</h2>
-        <p id="powerspin-win"></p>
-        <div class="popup-description" id="popup-description-ps">
-            <div class="popup-description-img" id="popup-description-img-ps">
-                <img src="./assets/medusa.png" alt="Medusa">
-                <img src="./assets/achilles.png" alt="Achilles">
-                <img src="./assets/aristoteles.png" alt="Aristoteles">
-                <img src="./assets/alexander.png" alt="Alexander">
-                <img src="./assets/zeus.jpg" alt="Zeus">
-            </div>
-            <div>remain</div>
-        </div>
-    </div>
-
-    <div id="freegames-popup" class="glass-modal">
-        <h2>FREEGAMES</h2>
-        <p id="freegames-win"></p>
-        <div class="popup-description" id="popup-description-fg">
-            <img src="./assets/eye.png" alt="Eye">
-            <div>Sticky Wild</div>
-        </div>
-    </div>
-
-    <div id="superspins-popup" class="glass-modal">
-        <h2>SUPERSPINS</h2>
-        <p id="superspin-win"></p>
-        <div class="popup-description" id="popup-description-ss">
-            <div class="popup-description-img" id="popup-description-img-ss">
-                <img src="./assets/eye.png" alt="Eye">
-                <div>&#9866;</div>
-                <div> TURNS TO </div>
-                <div>&rightarrow;</div>
-                <img src="./assets/golden_eye.png" alt="Golden Eye">
-            </div>
-            <div>Sticky Wild &amp; Total Wins x2</div>
-        </div>
     </div>
 
     <div id="header" class="glass-panel">
@@ -64,6 +131,11 @@
         <div id="alt-head-fg" class="alt-head">FREEGAME</div>
         <div id="alt-head-ps" class="alt-head">POWERSPIN</div>
         <div id="alt-head-ss" class="alt-head">SUPERSPIN</div>
+        <div id="mode-panel" class="mode-panel" aria-live="polite">
+            <div id="mode-panel-title" class="mode-panel-title"></div>
+            <div id="mode-panel-progress" class="mode-panel-progress"></div>
+            <div id="mode-panel-detail" class="mode-panel-detail"></div>
+        </div>
     </div>
 
     <div id="slot-machine" class="glass-panel glass-panel--reels">

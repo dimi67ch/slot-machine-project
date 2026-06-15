@@ -1,6 +1,6 @@
-import { ROW_COUNT } from './constants.js';
-import { GS } from './state.js';
-import { getCellVw, getWildName, getSymbolPool } from './utils.js';
+import { ROW_COUNT } from './constants.js?v=20260615-4';
+import { GS } from './state.js?v=20260615-4';
+import { getCellVw, getWildName, getSymbolPool } from './utils.js?v=20260615-4';
 
 function findSymbolAtRow(reelEl, row) {
     const cellVw = getCellVw();

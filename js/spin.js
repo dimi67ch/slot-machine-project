@@ -1,14 +1,14 @@
-import { REEL_COUNT, SYMBOL_PAYOUTS } from './constants.js';
-import { GS } from './state.js';
-import { getCellVw, getSymbolByName, getWildName, buildWinLines, countSymbol, isCompactScreen } from './utils.js';
+import { REEL_COUNT, SYMBOL_PAYOUTS } from './constants.js?v=20260615-4';
+import { GS } from './state.js?v=20260615-4';
+import { getCellVw, getSymbolByName, getWildName, buildWinLines, countSymbol, isCompactScreen } from './utils.js?v=20260615-4';
 import { renderWin, renderBank, setSpinButtonEnabled, clearHighlights,
-         highlightWins, hideAllPopups, updateHeadCount } from './rendering.js';
-import { animateReel } from './animation.js';
+         highlightWins, hideAllPopups, updateHeadCount } from './rendering.js?v=20260615-4';
+import { animateReel } from './animation.js?v=20260615-4';
 import { applyPreviousWildOverlays, moveWildOverlays, removeAllWildOverlays,
-         shiftEyePositions, updateSymbolSettings } from './wilds.js';
+         shiftEyePositions, updateSymbolSettings } from './wilds.js?v=20260615-4';
 import { handleIntro, handleEndOfSpecialMode,
-         checkForFreegames, checkForPowerspins, checkForSuperspins } from './bonuses.js';
-import { playBeep, playClick } from './sounds.js';
+         checkForFreegames, checkForPowerspins, checkForSuperspins } from './bonuses.js?v=20260615-4';
+import { playBeep, playClick } from './sounds.js?v=20260615-4';
 
 let lastSpinWin = 0;
 
@@ -98,13 +98,26 @@ function onAllReelsComplete() {
 
     processWins();
 
-    if (mode !== 'superspins' && mode !== 'freegames')  checkForPowerspins();
-    if (mode !== 'superspins' && mode !== 'powerspins') checkForFreegames();
-    if (mode !== 'superspins')                          checkForSuperspins();
+    if (mode === 'normal') {
+        const eyes = countSymbol(GS.results, 'Eye');
+        const zeus = countSymbol(GS.results, 'Zeus');
+
+        if (eyes >= 3 && zeus >= 3) {
+            checkForSuperspins();
+        } else {
+            checkForPowerspins();
+            checkForFreegames();
+        }
+    } else {
+        if (mode !== 'superspins' && mode !== 'freegames')  checkForPowerspins();
+        if (mode !== 'superspins' && mode !== 'powerspins') checkForFreegames();
+        if (mode !== 'superspins')                          checkForSuperspins();
+    }
 
     if (mode === 'freegames')  GS.freegames.totalWin  += lastSpinWin;
     if (mode === 'powerspins') GS.powerspins.totalWin += lastSpinWin;
     if (mode === 'superspins') GS.superspins.totalWin += lastSpinWin;
+    if (mode !== 'normal') updateHeadCount(mode);
 
     if (mode === 'freegames' || mode === 'superspins') {
         shiftEyePositions();
